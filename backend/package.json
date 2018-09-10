@@ -1,0 +1,24 @@
+{
+  "name": "sportal",
+  "version": "1.0.0",
+  "description": "Sponsorship Portal by HackGT",
+  "main": "server.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HackGT/Sportal.git"
+  },
+  "author": "HackGT",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HackGT/Sportal/issues"
+  },
+  "homepage": "https://github.com/HackGT/Sportal#readme",
+  "dependencies": {
+    "@types/express": "^4.16.0",
+    "express": "^4.16.3",
+    "typescript": "^3.0.3"
+  }
+}
