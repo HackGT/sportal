@@ -4,6 +4,8 @@
   "description": "Sponsorship Portal by HackGT",
   "main": "server.js",
   "scripts": {
+    "build": "tsc",
+    "dev": "tsc & node ./build/server.js",
     "test": "jest"
   },
   "repository": {
@@ -17,8 +19,21 @@
   },
   "homepage": "https://github.com/HackGT/Sportal#readme",
   "dependencies": {
+    "@types/bcrypt": "^2.0.0",
+    "@types/compression": "0.0.36",
     "@types/express": "^4.16.0",
+    "@types/jsonwebtoken": "^7.2.8",
+    "@types/log4js": "^2.3.5",
+    "@types/pg": "^7.4.10",
+    "bcrypt": "^3.0.0",
+    "compression": "^1.7.3",
     "express": "^4.16.3",
+    "jsonwebtoken": "^8.3.0",
+    "log4js": "^3.0.5",
+    "pg": "^7.4.3",
     "typescript": "^3.0.3"
+  },
+  "devDependencies": {
+    "tslint": "^5.11.0"
   }
 }
