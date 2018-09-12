@@ -3,38 +3,45 @@ import * as compression from "compression";
 import {Logger, getLogger} from "log4js";
 
 import {loadConfig} from "./config";
-import notFoundHandler from "./middlewares/error/notFoundHandler"
+import notFoundHandler from "./middlewares/error/notFoundHandler";
 import errorHandler from "./middlewares/error/errorHandler";
 
 // Controllers (route handlers)
 import userController from "./controllers/user";
+import successHandler from "./middlewares/success/successHandler";
 
 // Create Express server
 const app: express.Application = express();
 
 // Express configuration
 const config = loadConfig();
-app.set('config', config);
+app.set("config", config);
 app.use(compression());
 app.use(express.json({
-    type: function() {
+    type() {
         return true;
     }
 }));
 
 // Setup console logging
 const logger: Logger = getLogger();
-if (app.get('config').serverEnv === 'development') {
-    logger.level = 'debug';
+if (app.get("config").serverEnv === "development") {
+    logger.level = "debug";
 } else {
-    logger.level = 'error';
+    logger.level = "error";
 }
-app.set('logger', logger);
+app.set("logger", logger);
 
 /**
  * Primary app routes.
  */
-app.use('/user', userController);
+app.use("/user", userController);
+
+/**
+ * Final Success Handler
+ * This will pass requests with no status set to the 404 handler
+ */
+app.use(successHandler);
 
 /**
  * 404 Error Handler

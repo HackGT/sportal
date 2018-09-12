@@ -1,9 +1,9 @@
 import {sign, SignOptions} from "jsonwebtoken";
 
-import TokenPayloadInterface from "./tokenPayloadInterface";
+import ITokenPayload from "./tokenPayloadInterface";
 
-export class ReturnTokenPayload implements TokenPayloadInterface {
-    id: string;
+export class ReturnTokenPayload implements ITokenPayload {
+    public id: string;
 
     constructor(id: string) {
         this.id = id;
@@ -12,5 +12,5 @@ export class ReturnTokenPayload implements TokenPayloadInterface {
 
 export function createToken(id: string, secret: string, exp: number) {
     const tokenPayload = new ReturnTokenPayload(id);
-    return sign(JSON.parse(JSON.stringify(tokenPayload)), secret, <SignOptions> {expiresIn: exp});
+    return sign(JSON.parse(JSON.stringify(tokenPayload)), secret, {expiresIn: exp} as SignOptions);
 }

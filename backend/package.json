@@ -4,6 +4,7 @@
   "description": "Sponsorship Portal by HackGT",
   "main": "server.js",
   "scripts": {
+    "lint": "tslint",
     "build": "tsc",
     "dev": "tsc & node ./build/server.js",
     "test": "jest"
@@ -34,6 +35,9 @@
     "typescript": "^3.0.3"
   },
   "devDependencies": {
+    "@types/supertest": "^2.0.6",
+    "jest": "^23.6.0",
+    "supertest": "^3.3.0",
     "tslint": "^5.11.0"
   }
 }

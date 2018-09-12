@@ -5,7 +5,7 @@ import app from "../../app";
 
 const SALT_ROUNDS = 10;
 
-export interface User {
+export interface IUser {
     id: number;
     org_id: number;
     email: string;
@@ -13,7 +13,7 @@ export interface User {
 }
 
 export async function addUser(email: string, password: string, org_id: number) {
-    const addUserQuery = 'INSERT INTO sponsors (org_id, email, password) VALUES ($1, $2, $3);';
+    const addUserQuery = "INSERT INTO sponsors (org_id, email, password) VALUES ($1, $2, $3);";
     const passwordHash = await hash(password, SALT_ROUNDS);
     const postgresClient = new Client(app.get('config').databaseConnectionString);
     await postgresClient.connect();
@@ -21,14 +21,14 @@ export async function addUser(email: string, password: string, org_id: number) {
     await postgresClient.end();
 }
 
-export async function getUserProfile(email: string): Promise<User> {
-    const getUserQuery = 'SELECT * FROM sponsors WHERE email = $1;';
-    const postgresClient = new Client(app.get('config').databaseConnectionString);
+export async function getUserProfile(email: string): Promise<IUser> {
+    const getUserQuery = "SELECT * FROM sponsors WHERE email = $1;";
+    const postgresClient = new Client(app.get("config").databaseConnectionString);
     await postgresClient.connect();
     const result = await postgresClient.query(getUserQuery, [email]);
     await postgresClient.end();
     if (result.rowCount <= 0) {
-        throw new Error('User does not exist.');
+        throw new Error("User does not exist.");
     }
-    return <User> result.rows[0];
+    return result.rows[0] as IUser;
 }

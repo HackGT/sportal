@@ -1,12 +1,12 @@
 import {Request, Response, NextFunction} from "express";
 import {verify} from "jsonwebtoken";
 
-import TokenPayload from "../../models/jwt/tokenPayloadInterface";
+import ITokenPayload from "../../models/jwt/tokenPayloadInterface";
 
 export default function verifyRequestAuthenticated(req: Request, res: Response, next: NextFunction) {
     try {
-        const payload = verify(retrieveTokenFromHeader(req), req.app.get('config').authSecret);
-        req.id = (<TokenPayload> payload).id;
+        const payload = verify(retrieveTokenFromHeader(req), req.app.get("config").authSecret);
+        req.id = (payload as ITokenPayload).id;
         next();
     } catch (err) {
         next(err);
