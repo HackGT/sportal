@@ -1,13 +1,13 @@
-import {Router, Request, Response, NextFunction} from "express";
+import {Router} from "express";
 import {compare} from "bcrypt";
 
-import {User, getUserProfile} from "../../models/user/userModel";
+import {IUser, getUserProfile} from "../../models/user/userModel";
 import {createToken} from "../../models/jwt/tokenModel";
 import ResponseCodes from "../../models/response/responseCodes";
 
 class LoginRequest {
-    email: string;
-    password: string;
+    public email: string;
+    public password: string;
 
     constructor(email: string, password: string) {
         this.email = email;
@@ -16,7 +16,7 @@ class LoginRequest {
 }
 
 class LoginResponse {
-    jwt: string;
+    public jwt: string;
 
     constructor(jwt: string) {
         this.jwt = jwt;
@@ -25,23 +25,36 @@ class LoginResponse {
 
 const router = Router();
 
-router.post('', function(req: Request, res: Response, next: NextFunction) {
-    const loginRequest = <LoginRequest> req.body;
-    getUserProfile(loginRequest.email).catch(function(err) {
+router.post("/", async (req, res, next) => {
+    const loginRequest = req.body as LoginRequest;
+    let profile: IUser;
+    try {
+        profile = await getUserProfile(loginRequest.email);
+    }
+    catch (err) {
         res.status(ResponseCodes.ERROR_INTERNAL_SERVER_ERROR);
         next(err);
-    }).then(function(user: User) {
-        return compare(loginRequest.password, user.password);
-    }).then(function() {
-        const loginResponse = new LoginResponse(createToken(<string> loginRequest.email, 
-            req.app.get('config').authSecret, req.app.get('config').authExp));
-        res.status(ResponseCodes.SUCCESS);
-        res.json(loginResponse);
-    }).catch(function(err) {
-        res.status(ResponseCodes.ERROR_UNAUTHORIZED);
-        err.message = 'Invalid Credentials';
+        return;
+    }
+    try {
+        const validCredentials = await compare(loginRequest.password, profile.password);
+        if (validCredentials) {
+            const loginResponse = new LoginResponse(createToken(loginRequest.email as string,
+                req.app.get("config").authSecret, req.app.get("config").authExp));
+            res.status(ResponseCodes.SUCCESS);
+            req.returnObject = loginResponse;
+            next();
+        }
+        else {
+            res.status(ResponseCodes.ERROR_UNAUTHORIZED);
+            next(new Error("Invalid Credentials"));
+        }
+    }
+    catch(err) {
+        res.status(ResponseCodes.ERROR_INTERNAL_SERVER_ERROR);
         next(err);
-    });
+        return;
+    }
 });
 
 export default router;
