@@ -11,6 +11,12 @@ class Config {
     // Database Config
     public databaseConnectionString: string = process.env.DB_CONNECTION_STRING as string;
 
+    // GraphQL Config
+    public graphqlRegistrationEndpoint: string = process.env.GRAPHQL_REGISTRATION_ENDPOINT as string
+        || 'https://registration.hack.gt/graphql';
+    public graphqlRegistrationApiKey: string = process.env.GRAPHQL_REGISTRATION_API_KEY as string;
+    public graphqlInternalPaginationN: number = 50;
+
     // Required Configurations
     public required: string[] = [
         this.databaseConnectionString
