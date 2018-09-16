@@ -2,7 +2,6 @@
     "compilerOptions": {
         "module": "commonjs",
         "outDir": "build",
-        "types": [],
         "typeRoots": [
             "./node_modules/@types"
         ],
@@ -11,6 +10,7 @@
             "esnext.asynciterable",
             "es2017",
             "es2015.promise",
+            "dom"
         ],
         "sourceMap": true,
         "alwaysStrict": true,
