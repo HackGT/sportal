@@ -19,7 +19,8 @@ class Config {
 
     // Required Configurations
     public required: string[] = [
-        this.databaseConnectionString
+        this.databaseConnectionString,
+        this.graphqlRegistrationApiKey
     ];
 }
 
