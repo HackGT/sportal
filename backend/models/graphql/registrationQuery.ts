@@ -1,17 +1,20 @@
-import {request, GraphQLClient} from "graphql-request";
+import {GraphQLClient} from "graphql-request";
 
 // Registration request parameters
 
 export class RegistrationSearchUserRequest {
     queryTemplate: string = `
-        query {
-            search_user(search: $search, n: $n, offset: $offset, filter: {applied: true, accepted: true, confirmed: true}) {
+        query ($search: String!, $n: Int!, $offset: Int!) {
+            search_user(search: $search, n: $n, offset: $offset, filter: {applied: true}) {
+                total
+                count
+                offset
                 users {
                     id
                 }
             }
         }
-    `
+    `;
     parameters: RegistrationSearchUserRequestParameters;
 
     constructor(parameters: RegistrationSearchUserRequestParameters) {
@@ -44,8 +47,8 @@ export class RegistrationSearchUserResponse {
 
 export class RegistrationGetUsersRequest {
     queryTemplate: string = `
-        query {
-            users(n: $n, ids: $ids, pagination_token: $pagination_token, filter: {applied: true, accepted: true, confirmed: true}) {
+        query ($n: Int!, $ids: [String], $pagination_token: ID) {
+            users(n: $n, ids: $ids, pagination_token: $pagination_token, filter: {applied: true}) {
                 id
                 name 
                 email 
@@ -60,9 +63,13 @@ export class RegistrationGetUsersRequest {
         }
     `;
     parameters: RegistrationGetUsersRequestParameters;
+
+    constructor(parameters: RegistrationGetUsersRequestParameters) {
+        this.parameters = parameters;
+    }
 }
 
-class RegistrationGetUsersRequestParameters {
+export class RegistrationGetUsersRequestParameters {
     pagination_token: string;
     n: number;
     ids: string[];
@@ -78,7 +85,7 @@ export class RegistrationGetUsersResponse {
     users: RegistrationUser[];
 }
 
-class RegistrationUser {
+export class RegistrationUser {
     id: string;
     name?: string;
     email?: string;
@@ -96,18 +103,19 @@ class File {
     path?: string;
 }
 
-export async function userSearchRegistration(endpoint: string, adminToken: string, request: RegistrationSearchUserRequest): string[] {
+export async function userSearchRegistration(endpoint: string, adminToken: string, request: RegistrationSearchUserRequest): Promise<string[]> {
     const userIds: string[] = [];
     const client = new GraphQLClient(endpoint, { headers: {Authorization: "Basic " + adminToken}});
     let response: RegistrationSearchUserResponse
-        = ((await client.request(request.queryTemplate, request.parameters) as any).data.search_user) as RegistrationSearchUserResponse;
+        = ((await client.request(request.queryTemplate, request.parameters) as any).search_user) as RegistrationSearchUserResponse;
+    console.log(JSON.stringify(response));
     let total = response.count;
     for (let x = 0; x < response.count; x++) {
         userIds.push(response.users[x].id);
     }
     while (total < response.total) {
         request.parameters.offset += response.count;
-        response = (await client.request(request.queryTemplate, request.parameters) as any).data.search_user as RegistrationSearchUserResponse;
+        response = (await client.request(request.queryTemplate, request.parameters) as any).search_user as RegistrationSearchUserResponse;
         for (let x = 0; x < response.count; x++) {
             userIds.push(response.users[x].id);
         }
@@ -118,5 +126,5 @@ export async function userSearchRegistration(endpoint: string, adminToken: strin
 
 export async function registrationGetUsers(endpoint: string, adminToken: string, request: RegistrationGetUsersRequest): Promise<RegistrationGetUsersResponse> {
     const client = new GraphQLClient(endpoint, { headers: {Authorization: "Basic " + adminToken}});
-    return (await client.request(request.queryTemplate, request.parameters) as any).data as RegistrationGetUsersResponse;
+    return (await client.request(request.queryTemplate, request.parameters) as any) as RegistrationGetUsersResponse;
 }

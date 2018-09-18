@@ -7,7 +7,8 @@ import notFoundHandler from "./middlewares/error/notFoundHandler";
 import errorHandler from "./middlewares/error/errorHandler";
 
 // Controllers (route handlers)
-import userController from "./controllers/user";
+import user from "./controllers/user";
+import search from "./controllers/search";
 import successHandler from "./middlewares/success/successHandler";
 
 // Create Express server
@@ -32,10 +33,17 @@ if (app.get("config").serverEnv === "development") {
 }
 app.set("logger", logger);
 
+// Ensure response status error starts at 0 so that the middleware don't break
+app.use((req, res, next) => {
+    res.status(0);
+    next();
+});
+
 /**
  * Primary app routes.
  */
-app.use("/user", userController);
+app.use("/user", user);
+app.use("/search", search)
 
 /**
  * Final Success Handler
