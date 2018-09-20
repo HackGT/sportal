@@ -14,7 +14,7 @@ import ResponseCodes from "../models/response/responseCodes";
 export class SearchRequest {
     public search: string;
     public n: number;
-    public pagination_token: string;
+    public paginationToken: string;
 }
 
 export class SearchResponse {
