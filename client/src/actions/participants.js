@@ -1,7 +1,7 @@
 import { ACTION_PARTICIPANTS_LOAD, ACTION_PARTICIPANTS_LOAD_BEGIN, ACTION_UI_ERROR_SHOW, ACTION_UI_SELECT_PARTICIPANT_ID } from "../constants/actions";
 import { HOST } from "../constants/configs";
 
-export function loadParticipants(ids = null, search = null) {
+export function loadParticipants({ids = null, search = null, star = false}) {
     return dispatch => {
         dispatch({
             type: ACTION_PARTICIPANTS_LOAD_BEGIN
@@ -13,6 +13,8 @@ export function loadParticipants(ids = null, search = null) {
             promise = loadParticipantsWithIDs(ids);
         } else if (search) {
             promise = loadParticipantsWithSearch(search);
+        } else if (star) {
+            promise = loadParticipantsWithStars();
         } else {
             // No config, load all
             promise = loadParticipantsWithSearch('');
@@ -23,16 +25,20 @@ export function loadParticipants(ids = null, search = null) {
             if (response.ok) {
                 return response.json();
             }
+            if (response.status === 403 || response.status === 401) {
+                throw new Error('Error: Invalid Credentials.');
+            }
+            throw new Error('Error: Connection lost. Please check your Internet connection and reload page.');
         })
         .then(json => {
             // TODO: Detect errors and process response if necessary
             dispatch(loadParticipantsObjects(json.users));
         })
-        .catch(() => {
+        .catch((error) => {
             dispatch({
                 type: ACTION_UI_ERROR_SHOW,
                 payload: {
-                    message: 'Connection lost. Please reload this page.'
+                    message: error.message,
                 }
             })
         });
@@ -56,14 +62,22 @@ function loadParticipantsWithSearch(searchTerm) {
     // TODO: Solidify API parameters
     return fetch(`${HOST}/search`, {
         method: 'POST',
+        mode: 'cors',
+        credentials: 'include',
         headers: new Headers({
-            'Authorization': '',
+            'Authorization': `Bearer ${window.localStorage.getItem("token")}`,
             'Content-Type': 'application/json'
         }),
         body: JSON.stringify({
-
+            search: searchTerm,
+            // paginationToken: '',
+            n: 8,
         })
     });
+}
+
+function loadParticipantsWithStars() {
+    // TODO: Solidify API parameters
 }
 
 export function selectParticipant(id) {

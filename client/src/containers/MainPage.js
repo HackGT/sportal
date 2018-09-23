@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Grid, Dimmer, Loader, Input } from 'semantic-ui-react';
+import { Grid, Dimmer, Loader, Input, Button, Icon, Form } from 'semantic-ui-react';
 import ParticipantsTable from '../components/ParticipantsTable';
 import ResumeView from '../components/ResumeView';
 import { ACTION_UI_SEARCH_STRING } from '../constants/actions';
-import { selectParticipant, starParticipant, unstarParticipant } from '../actions/participants';
+import { selectParticipant, starParticipant, unstarParticipant, loadParticipants } from '../actions/participants';
 
 
 class MainPage extends Component {
@@ -20,6 +20,10 @@ class MainPage extends Component {
         const unstarParticipant = this.props.unstarParticipant;
         const searchString = this.props.state.ui.searchTerm;
         const changeSearchString = this.props.changeSearchString;
+        // const loadAllParticipants = this.props.loadAllParticipants;
+        const loadStarredParticipants = this.props.loadStarredParticipants;
+        const loadSearchedParticipants = this.props.loadSearchedParticipants;
+        
         
         return (
             <Grid>
@@ -29,7 +33,28 @@ class MainPage extends Component {
                             <Loader size="medium">Loading</Loader>
                         </Dimmer>
                         <div style={{paddingLeft: '30px'}}>
-                            <Input fluid type="text" action="search" placeholder="Search..."  onChange={(e) => changeSearchString(e.target.value)} value={searchString} />
+                            <Form
+                                onSubmit={() => {
+                                    loadSearchedParticipants();
+                                }}
+                            >
+                                <Form.Field>
+                                    <Input
+                                        fluid
+                                        action="search"
+                                        placeholder="Search..."
+                                        onChange={(e, data) => changeSearchString(data.value)} value={searchString}
+                                    />
+                                </Form.Field>
+                            </Form>
+                            <div style={{paddingTop: '20px'}}>
+                                <Button
+                                    color="yellow"
+                                    onClick={() => loadStarredParticipants()}
+                                >
+                                    <Icon name="star" /> View All Starred Participants
+                                </Button>
+                            </div>
                             <ParticipantsTable
                                 participants={participants}
                                 selectedParticipantID={selectedParticipantID}
@@ -77,6 +102,15 @@ const mapDispatchToProps = (dispatch) => {
                     searchTerm
                 }
             })
+        },
+        loadAllParticipants: () => {
+            dispatch(loadParticipants({}))
+        },
+        loadStarredParticipants: () => {
+            dispatch(loadParticipants({star: true}))
+        },
+        loadSearchedParticipants: (searchTerm) => {
+            dispatch(loadParticipants({search: searchTerm}))
         }
     };
 };

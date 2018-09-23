@@ -38,7 +38,7 @@ class NFCService {
 
     onReceiveID(id) {
         // TODO: dispatch loadParticipantsWithID and selectParticipant
-        this.store.dispatch(loadParticipants([id]));
+        this.store.dispatch(loadParticipants({ids: [id]}));
         this.store.dispatch(selectParticipant(id));
     }
 }

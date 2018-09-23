@@ -48,7 +48,7 @@ const ui = (state = initialState.ui, action) => {
             });
         case ACTION_UI_SEARCH_STRING:
             return Object.assign({}, state, {
-                searchTerm: action.payload.keyword
+                searchTerm: action.payload.searchTerm
             });
         case ACTION_UI_SELECT_PARTICIPANT_ID:
             return Object.assign({}, state, {
