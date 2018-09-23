@@ -2,7 +2,7 @@ import {Request, Response, NextFunction} from "express";
 import {Logger} from "log4js";
 
 import JSONResponse from "../../models/response/jsonGenericResponseModel";
-import ResponseCodes from "../../models/response/responseCodes";
+import {ResponseCodes} from "../../models/response/responseCodes";
 
 function handleFinalError(err: Error, req: Request, res: Response, next: NextFunction) {
 
@@ -18,6 +18,10 @@ function handleFinalError(err: Error, req: Request, res: Response, next: NextFun
     const logger: Logger = req.app.get("logger");
     if (res.statusCode < 500) {
         logger.warn(req.method + " " + req.originalUrl + ": " + err.message);
+        if (res.statusCode == 401 && req.app.get("config").serverEnv !== "development") {
+            // Sanitize 401 data so that people don't know if the user exists
+            err.message = "Unauthorized";
+        }
     } else {
         logger.error(req.method + " " + req.originalUrl + ": " + err.message);
         logger.error(err);

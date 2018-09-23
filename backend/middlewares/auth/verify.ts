@@ -1,5 +1,6 @@
 import {Request, Response, NextFunction} from "express";
 import {verify} from "jsonwebtoken";
+import {ResponseCodes} from "../../models/response/responseCodes";
 
 import ITokenPayload from "../../models/jwt/tokenPayloadInterface";
 
@@ -9,6 +10,7 @@ export default function verifyRequestAuthenticated(req: Request, res: Response, 
         req.id = (payload as ITokenPayload).id;
         next();
     } catch (err) {
+        res.status(ResponseCodes.ERROR_UNAUTHORIZED);
         next(err);
     }
 

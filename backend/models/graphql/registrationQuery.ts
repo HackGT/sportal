@@ -108,7 +108,6 @@ export async function userSearchRegistration(endpoint: string, adminToken: strin
     const client = new GraphQLClient(endpoint, { headers: {Authorization: "Basic " + adminToken}});
     let response: RegistrationSearchUserResponse
         = ((await client.request(request.queryTemplate, request.parameters) as any).search_user) as RegistrationSearchUserResponse;
-    console.log(JSON.stringify(response));
     let total = response.count;
     for (let x = 0; x < response.count; x++) {
         userIds.push(response.users[x].id);

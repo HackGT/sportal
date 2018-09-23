@@ -2,7 +2,7 @@ import {Request, Response, NextFunction} from "express";
 import {Logger} from "log4js";
 
 import JSONResponse from "../../models/response/jsonGenericResponseModel";
-import ResponseCodes from "../../models/response/responseCodes";
+import {ResponseCodes} from "../../models/response/responseCodes";
 
 function handleFinalSuccess(req: Request, res: Response, next: NextFunction) {
     if (!res.statusCode) {
