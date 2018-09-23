@@ -37,7 +37,7 @@ class ParticipantsTable extends React.Component {
                                         }
                                     }}
                                     onSelect={() => {
-                                        selectParticipant(participant.id)
+                                        selectParticipant(participant.id, participant.resumeId)
                                     }}
                                     onDownload={() => {
                                         downloadParticipantResume(participant.id)

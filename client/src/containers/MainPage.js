@@ -86,8 +86,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        selectParticipant: (id) => {
-            dispatch(selectParticipant(id));
+        selectParticipant: (id, resumeId) => {
+            dispatch(selectParticipant(id, resumeId));
         },
         starParticipant: (id) => {
             dispatch(starParticipant(id));

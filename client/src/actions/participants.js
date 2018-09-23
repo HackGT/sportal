@@ -1,4 +1,4 @@
-import { ACTION_PARTICIPANTS_LOAD, ACTION_PARTICIPANTS_LOAD_BEGIN, ACTION_UI_ERROR_SHOW, ACTION_UI_SELECT_PARTICIPANT_ID } from "../constants/actions";
+import { ACTION_PARTICIPANTS_LOAD, ACTION_PARTICIPANTS_LOAD_BEGIN, ACTION_UI_ERROR_SHOW, ACTION_UI_SELECT_PARTICIPANT_ID, ACTION_PARTICIPANTS_LOAD_END } from "../constants/actions";
 import { HOST } from "../constants/configs";
 
 export function loadParticipants({ids = null, search = null, star = false}) {
@@ -33,6 +33,9 @@ export function loadParticipants({ids = null, search = null, star = false}) {
         .then(json => {
             // TODO: Detect errors and process response if necessary
             dispatch(loadParticipantsObjects(json.users));
+            dispatch({
+                type: ACTION_PARTICIPANTS_LOAD_END
+            });
         })
         .catch((error) => {
             dispatch({
@@ -49,7 +52,20 @@ function loadParticipantsObjects(listOfParticipantsObjects) {
     return {
         type: ACTION_PARTICIPANTS_LOAD,
         payload: {
-            list: listOfParticipantsObjects
+            list: listOfParticipantsObjects.map(obj => {
+                const resumePath = obj.questions.filter(q => q.type==='resume')[0].file.path;
+                console.log(resumePath);
+                const resumeFile = resumePath.split('/').pop();
+                const resumeFileArr = resumeFile.split('.');
+                const resumeType = resumeFileArr.pop();
+                const resumeId = resumeFileArr.pop();
+
+                return Object.assign({}, obj, {
+                    resumePath,
+                    resumeType,
+                    resumeId
+                })
+            })
         }
     };
 }
@@ -80,17 +96,45 @@ function loadParticipantsWithStars() {
     // TODO: Solidify API parameters
 }
 
-export function selectParticipant(id) {
-    // TODO: Fetch resume url and display resume
+export function selectParticipant(id, resumeId) {
     return dispatch => {
-        dispatch({
-            type: ACTION_UI_SELECT_PARTICIPANT_ID,
-            payload: {
-                id,
-                resumeType: 'pdf',
-                url: 'https://rsli.github.io/download/resume.pdf'
+        fetch(`${HOST}/resume`, {
+            method: 'POST',
+            mode: 'cors',
+            credentials: 'include',
+            headers: new Headers({
+                'Authorization': `Bearer ${window.localStorage.getItem("token")}`,
+                'Content-Type': 'application/json'
+            }),
+            body: JSON.stringify({
+                resume: resumeId
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
             }
+            throw new Error('Error: Connection lost. Please check your Internet connection and reload page.');
+        })
+        .then(json => {
+            dispatch({
+                type: ACTION_UI_SELECT_PARTICIPANT_ID,
+                payload: {
+                    id,
+                    resumeType: 'pdf',
+                    url: json.resumeUrl
+                }
+            });
+        })
+        .catch((error) => {
+            dispatch({
+                type: ACTION_UI_ERROR_SHOW,
+                payload: {
+                    message: error.message
+                }
+            })
         });
+        
     };
 }
 
