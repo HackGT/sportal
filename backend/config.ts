@@ -17,10 +17,21 @@ class Config {
     public graphqlRegistrationApiKey: string = process.env.GRAPHQL_REGISTRATION_API_KEY as string;
     public graphqlInternalPaginationN: number = 50;
 
+    // AWS SDK
+    public awsAccessKeyId: string = process.env.AWS_ACCESS_KEY_ID as string;
+    public awsSecretAccessKey: string = process.env.AWS_SECRET_ACCESS_KEY as string;
+    public awsSignedUrlExpires: number = Number(process.env.AWS_SIGNED_URL_EXPIRES) || 60;
+    public awsResumeBucket: string = process.env.AWS_RESUME_BUCKET as string;
+
+    // ZLIB
+    public zlibCompressionLevel: number = 1;
+
     // Required Configurations
     public required: string[] = [
         this.databaseConnectionString,
-        this.graphqlRegistrationApiKey
+        this.graphqlRegistrationApiKey,
+        this.awsAccessKeyId,
+        this.awsSecretAccessKey
     ];
 }
 

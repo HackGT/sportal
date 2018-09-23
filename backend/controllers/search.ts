@@ -9,7 +9,7 @@ import {
     userSearchRegistration,
     registrationGetUsers,
 } from "../models/graphql/registrationQuery";
-import ResponseCodes from "../models/response/responseCodes";
+import {ResponseCodes} from "../models/response/responseCodes";
 
 export class SearchRequest {
     public search: string;
@@ -40,7 +40,7 @@ router.post("/", async (req, res, next) => {
             req.app.get("config").graphqlRegistrationApiKey, new RegistrationSearchUserRequest(searchParams));
         
         // Get actual user objects
-        const getParams = new RegistrationGetUsersRequestParameters(searchBody.pagination_token, searchBody.n, ids);
+        const getParams = new RegistrationGetUsersRequestParameters(searchBody.paginationToken, searchBody.n, ids);
         const userList = await registrationGetUsers(req.app.get("config").graphqlRegistrationEndpoint, req.app.get("config").graphqlRegistrationApiKey, new RegistrationGetUsersRequest(getParams));
         const searchResponse = new SearchResponse(userList.users);
         res.status(ResponseCodes.SUCCESS);

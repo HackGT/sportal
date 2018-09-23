@@ -1,0 +1,37 @@
+import {Router} from "express";
+import {S3} from "aws-sdk";
+
+import bulk from "./resume/bulk";
+import {ResponseCodes} from "../models/response/responseCodes";
+
+interface IGetResumeRequest {
+    resume: string;
+}
+
+class GetResumeResponse {
+    resumeUrl: string;
+    constructor(resumeUrl: string) {
+        this.resumeUrl = resumeUrl;
+    }
+}
+
+const router = Router();
+
+router.use("/bulk", bulk);
+
+router.post('/', async (req, res, next) => {
+    try {
+        const resumeRequest = req.body as IGetResumeRequest;
+        const s3 = new S3();
+        const awsParams = {Bucket: req.app.get("config").awsResumeBucket as string, Key: resumeRequest.resume, Expires: req.app.get("config").awsSignedUrlExpires};
+        const signedUrl = s3.getSignedUrl("getObject", awsParams);
+        const resumeResponse = new GetResumeResponse(signedUrl);
+        res.status(ResponseCodes.SUCCESS);
+        req.returnObject = resumeResponse;
+        next();
+    } catch (err) {
+        next(err)
+    }
+});
+
+export default router;

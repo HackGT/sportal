@@ -1,7 +1,7 @@
 import {Router} from "express";
 
 import {addUser} from "../models/user/userModel";
-import ResponseCodes from "../models/response/responseCodes";
+import {ResponseCodes} from "../models/response/responseCodes";
 
 import renew from "./user/renew";
 import login from "./user/login";

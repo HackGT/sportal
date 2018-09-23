@@ -1,7 +1,7 @@
 import {Router} from "express";
 
 import {createToken} from "../../models/jwt/tokenModel";
-import ResponseCodes from "../../models/response/responseCodes";
+import {ResponseCodes} from "../../models/response/responseCodes";
 
 export class RenewResponse {
     public jwt: string;

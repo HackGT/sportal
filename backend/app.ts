@@ -1,10 +1,14 @@
 import * as express from "express";
 import * as compression from "compression";
 import {Logger, getLogger} from "log4js";
+import * as AWS from "aws-sdk";
 
 import {loadConfig} from "./config";
 import notFoundHandler from "./middlewares/error/notFoundHandler";
 import errorHandler from "./middlewares/error/errorHandler";
+
+// Auth
+import requireAuth from "./middlewares/auth/verify";
 
 // Controllers (route handlers)
 import user from "./controllers/user";
@@ -23,6 +27,9 @@ app.use(express.json({
         return true;
     }
 }));
+
+// AWS Configuration
+AWS.config.update({accessKeyId: app.get("config").awsAccessKeyId, secretAccessKey: app.get("config").awsSecretAccessKey});
 
 // Setup console logging
 const logger: Logger = getLogger();
@@ -43,7 +50,7 @@ app.use((req, res, next) => {
  * Primary app routes.
  */
 app.use("/user", user);
-app.use("/search", search)
+app.use("/search", requireAuth, search)
 
 /**
  * Final Success Handler

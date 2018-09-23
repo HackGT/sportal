@@ -3,7 +3,7 @@ import {compare} from "bcrypt";
 
 import {IUser, getUserProfile} from "../../models/user/userModel";
 import {createToken} from "../../models/jwt/tokenModel";
-import ResponseCodes from "../../models/response/responseCodes";
+import {ResponseCodes} from "../../models/response/responseCodes";
 
 class LoginRequest {
     public email: string;
@@ -32,7 +32,7 @@ router.post("/", async (req, res, next) => {
         profile = await getUserProfile(loginRequest.email);
     }
     catch (err) {
-        res.status(ResponseCodes.ERROR_INTERNAL_SERVER_ERROR);
+        res.status(ResponseCodes.ERROR_UNAUTHORIZED);
         next(err);
         return;
     }
