@@ -27,6 +27,12 @@ const router = Router();
 
 router.post("/", async (req, res, next) => {
     const loginRequest = req.body as LoginRequest;
+    console.log(loginRequest);
+    if (!loginRequest || !loginRequest.email || !loginRequest.password) {
+        res.status(ResponseCodes.ERROR_BAD_REQUEST);
+        req.routed = true;
+        next(new Error("Request missing login parameters"));
+    }
     let profile: IUser;
     try {
         profile = await getUserProfile(loginRequest.email);
@@ -43,15 +49,18 @@ router.post("/", async (req, res, next) => {
                 req.app.get("config").authSecret, req.app.get("config").authExp));
             res.status(ResponseCodes.SUCCESS);
             req.returnObject = loginResponse;
+            req.routed = true;
             next();
         }
         else {
             res.status(ResponseCodes.ERROR_UNAUTHORIZED);
+            req.routed = true;
             next(new Error("Invalid Credentials"));
         }
     }
     catch(err) {
         res.status(ResponseCodes.ERROR_INTERNAL_SERVER_ERROR);
+        req.routed = true;
         next(err);
         return;
     }

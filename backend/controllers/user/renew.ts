@@ -18,6 +18,7 @@ router.get("/", (req, res, next) => {
         req.app.get("config").authSecret, req.app.get("config").authExp));
     res.status(ResponseCodes.SUCCESS);
     req.returnObject = renewResponse;
+    req.routed = true;
     next();
 });
 

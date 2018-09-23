@@ -13,7 +13,7 @@ class Config {
 
     // GraphQL Config
     public graphqlRegistrationEndpoint: string = process.env.GRAPHQL_REGISTRATION_ENDPOINT as string
-        || 'https://registration.hack.gt/graphql';
+        || "https://registration.hack.gt/graphql";
     public graphqlRegistrationApiKey: string = process.env.GRAPHQL_REGISTRATION_API_KEY as string;
     public graphqlInternalPaginationN: number = 50;
 
@@ -21,7 +21,7 @@ class Config {
     public awsAccessKeyId: string = process.env.AWS_ACCESS_KEY_ID as string;
     public awsSecretAccessKey: string = process.env.AWS_SECRET_ACCESS_KEY as string;
     public awsSignedUrlExpires: number = Number(process.env.AWS_SIGNED_URL_EXPIRES) || 60;
-    public awsResumeBucket: string = process.env.AWS_RESUME_BUCKET as string;
+    public awsResumeBucket: string = process.env.AWS_RESUME_BUCKET as string || "registration-hackgt5-uploads";
 
     // ZLIB
     public zlibCompressionLevel: number = 1;

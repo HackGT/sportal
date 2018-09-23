@@ -8,11 +8,12 @@ import notFoundHandler from "./middlewares/error/notFoundHandler";
 import errorHandler from "./middlewares/error/errorHandler";
 
 // Auth
-import requireAuth from "./middlewares/auth/verify";
+//import requireAuth from "./middlewares/auth/verify";
 
 // Controllers (route handlers)
 import user from "./controllers/user";
 import search from "./controllers/search";
+import resume from "./controllers/resume";
 import successHandler from "./middlewares/success/successHandler";
 
 // Create Express server
@@ -22,11 +23,7 @@ const app: express.Application = express();
 const config = loadConfig();
 app.set("config", config);
 app.use(compression());
-app.use(express.json({
-    type() {
-        return true;
-    }
-}));
+app.use(express.json());
 
 // AWS Configuration
 AWS.config.update({accessKeyId: app.get("config").awsAccessKeyId, secretAccessKey: app.get("config").awsSecretAccessKey});
@@ -40,9 +37,11 @@ if (app.get("config").serverEnv === "development") {
 }
 app.set("logger", logger);
 
-// Ensure response status error starts at 0 so that the middleware don't break
-app.use((req, res, next) => {
-    res.status(0);
+// Enable CORS
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     next();
 });
 
@@ -50,7 +49,8 @@ app.use((req, res, next) => {
  * Primary app routes.
  */
 app.use("/user", user);
-app.use("/search", requireAuth, search)
+app.use("/search", search);
+app.use("/resume", resume);
 
 /**
  * Final Success Handler

@@ -5,7 +5,7 @@ import JSONResponse from "../../models/response/jsonGenericResponseModel";
 import {ResponseCodes} from "../../models/response/responseCodes";
 
 function handleFinalSuccess(req: Request, res: Response, next: NextFunction) {
-    if (!res.statusCode) {
+    if (!req.routed) {
         next();
         return;
     }
