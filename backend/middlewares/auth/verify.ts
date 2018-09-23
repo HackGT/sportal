@@ -11,6 +11,7 @@ export default function verifyRequestAuthenticated(req: Request, res: Response, 
         next();
     } catch (err) {
         res.status(ResponseCodes.ERROR_UNAUTHORIZED);
+        req.routed = true;
         next(err);
     }
 

@@ -12,8 +12,13 @@ interface IGetBulkResumeRequest {
 const router = Router();
 
 router.post("/", async (req, res, next) => {
+    const resumeBulkRequest = req.body as IGetBulkResumeRequest;
+    if (!resumeBulkRequest || !resumeBulkRequest.resumes) {
+        res.status(ResponseCodes.ERROR_BAD_REQUEST)
+        next(new Error("Request missing resume list parameter"));
+        return;
+    }
     try {
-        const resumeBulkRequest = req.body as IGetBulkResumeRequest;
         const s3 = new S3();
         const tempZipFileName = tmpNameSync({prefix: "resumes-bulk-", postfix: ".zip"});
         const archive = archiver("zip", {zlib: {level: req.app.get("config").zlibCompressionLevel}});
@@ -28,7 +33,7 @@ router.post("/", async (req, res, next) => {
             const resumeObject = s3.getObject(awsParams).createReadStream();
             archive.append(resumeObject, {name: fileName});
         });
-        
+        archive.finalize();
     } catch (err) {
         next(err)
     }
