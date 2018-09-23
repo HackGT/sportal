@@ -35,7 +35,7 @@ class MainPage extends Component {
                         <div style={{paddingLeft: '30px'}}>
                             <Form
                                 onSubmit={() => {
-                                    loadSearchedParticipants();
+                                    loadSearchedParticipants(searchString);
                                 }}
                             >
                                 <Form.Field>
