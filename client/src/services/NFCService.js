@@ -24,7 +24,7 @@ class NFCService {
         };
         this.socket.onmessage = (event) => {
             console.log(event.data);
-            // this.onReceiveID(event.data);
+            this.onReceiveID(JSON.parse(event.data)["badgeID"]);
         };
         this.socket.onerror = (event) => {
             console.error("Websocket error observed: ", event);

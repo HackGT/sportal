@@ -19,4 +19,4 @@ export const IS_DEV_ENV = process.env.DEVELOPMENT;
 // API URL
 export const HOST = (!IS_DEV_ENV) ? (window.location.protocol + '//' + window.location.host) : 'http://localhost:9000';
 // NFC Websocket URL (see NFCService for more info)
-export const NFC_WS_URL = 'ws://localhost:38899/';
+export const NFC_WS_URL = 'ws://localhost:1337/';
