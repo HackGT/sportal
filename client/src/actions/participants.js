@@ -54,11 +54,10 @@ function loadParticipantsObjects(listOfParticipantsObjects) {
         payload: {
             list: listOfParticipantsObjects.map(obj => {
                 const resumePath = obj.questions.filter(q => q.name==='resume')[0].file.path;
-                console.log(resumePath);
                 const resumeFile = resumePath.split('/').pop();
                 const resumeFileArr = resumeFile.split('.');
                 const resumeType = resumeFileArr.pop();
-                const resumeId = resumeFileArr.pop();
+                const resumeId = resumeFile;
 
                 return Object.assign({}, obj, {
                     resumePath,
@@ -96,7 +95,7 @@ function loadParticipantsWithStars() {
     // TODO: Solidify API parameters
 }
 
-export function selectParticipant(id, resumeId) {
+export function selectParticipant(participant) {
     return dispatch => {
         fetch(`${HOST}/resume`, {
             method: 'POST',
@@ -107,7 +106,7 @@ export function selectParticipant(id, resumeId) {
                 'Content-Type': 'application/json'
             }),
             body: JSON.stringify({
-                resume: resumeId
+                resume: participant.resumeId
             })
         })
         .then(response => {
@@ -120,8 +119,8 @@ export function selectParticipant(id, resumeId) {
             dispatch({
                 type: ACTION_UI_SELECT_PARTICIPANT_ID,
                 payload: {
-                    id,
-                    resumeType: 'pdf',
+                    id: participant.id,
+                    resumeType: participant.resumeType,
                     url: json.resumeUrl
                 }
             });
