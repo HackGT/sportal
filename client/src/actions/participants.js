@@ -53,7 +53,7 @@ function loadParticipantsObjects(listOfParticipantsObjects) {
         type: ACTION_PARTICIPANTS_LOAD,
         payload: {
             list: listOfParticipantsObjects.map(obj => {
-                const resumePath = obj.questions.filter(q => q.type==='resume')[0].file.path;
+                const resumePath = obj.questions.filter(q => q.name==='resume')[0].file.path;
                 console.log(resumePath);
                 const resumeFile = resumePath.split('/').pop();
                 const resumeFileArr = resumeFile.split('.');
