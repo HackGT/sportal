@@ -25,7 +25,7 @@ class ResumeView extends Component {
         );
 
         const docView = (
-            <iframe title="word-viewer" src={`"http://docs.google.com/gview?url=${selectedParticipantResumeURL}&embedded=true"`} />
+            <iframe style={{width: '100%', height: '100%'}} title="word-viewer" src={`http://docs.google.com/gview?url=${selectedParticipantResumeURL}&embedded=true`} />
         );
 
         const otherView = (
