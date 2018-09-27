@@ -94,7 +94,7 @@ export class RegistrationUser {
 }
 
 class Question {
-    type?: string;
+    name?: string;
     value?: string;
     file?: File;
 }
