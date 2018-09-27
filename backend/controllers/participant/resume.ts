@@ -2,7 +2,7 @@ import {Router} from "express";
 import {S3} from "aws-sdk";
 
 import bulk from "./resume/bulk";
-import {ResponseCodes} from "../models/response/responseCodes";
+import {ResponseCodes} from "../../models/response/responseCodes";
 
 interface IGetResumeRequest {
     resume: string;

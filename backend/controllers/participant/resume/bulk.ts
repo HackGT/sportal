@@ -3,7 +3,7 @@ import {S3} from "aws-sdk";
 import {tmpNameSync} from "tmp";
 import * as archiver from "archiver";
 
-import {ResponseCodes} from "../../models/response/responseCodes";
+import {ResponseCodes} from "../../../models/response/responseCodes";
 
 interface IGetBulkResumeRequest {
     resumes: string[];

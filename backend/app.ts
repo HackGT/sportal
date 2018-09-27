@@ -8,12 +8,11 @@ import notFoundHandler from "./middlewares/error/notFoundHandler";
 import errorHandler from "./middlewares/error/errorHandler";
 
 // Auth
-//import requireAuth from "./middlewares/auth/verify";
+import requireAuth from "./middlewares/auth/verify";
 
 // Controllers (route handlers)
 import user from "./controllers/user";
-import search from "./controllers/search";
-import resume from "./controllers/resume";
+import participant from "./controllers/participant";
 import successHandler from "./middlewares/success/successHandler";
 
 // Create Express server
@@ -49,8 +48,7 @@ app.use(function(req, res, next) {
  * Primary app routes.
  */
 app.use("/user", user);
-app.use("/search", search);
-app.use("/resume", resume);
+app.use("/participant", requireAuth, participant);
 
 /**
  * Final Success Handler
