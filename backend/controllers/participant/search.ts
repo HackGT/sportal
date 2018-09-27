@@ -8,8 +8,9 @@ import {
     RegistrationUser,
     userSearchRegistration,
     registrationGetUsers,
-} from "../models/graphql/registrationQuery";
-import {ResponseCodes} from "../models/response/responseCodes";
+} from "../../models/util/graphql/registrationQuery";
+import {ResponseCodes} from "../../models/util/response/responseCodes";
+import { Participant } from "../../models/participant/participantModel";
 
 export class SearchRequest {
     public search: string;
@@ -18,9 +19,9 @@ export class SearchRequest {
 }
 
 export class SearchResponse {
-    public users: RegistrationUser[];
+    public users: Participant[];
 
-    constructor(users: RegistrationUser[]) {
+    constructor(users: Participant[]) {
         this.users = users;
     }
 }
@@ -43,6 +44,8 @@ router.post("/", async (req, res, next) => {
         );
         const ids = await userSearchRegistration(req.app.get("config").graphqlRegistrationEndpoint,
             req.app.get("config").graphqlRegistrationApiKey, new RegistrationSearchUserRequest(searchParams));
+
+            
         // Get actual user objects
         const getParams = new RegistrationGetUsersRequestParameters(searchBody.paginationToken, searchBody.n, ids);
         const userList = await registrationGetUsers(req.app.get("config").graphqlRegistrationEndpoint, req.app.get("config").graphqlRegistrationApiKey, new RegistrationGetUsersRequest(getParams));
