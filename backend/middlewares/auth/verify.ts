@@ -1,8 +1,8 @@
 import {Request, Response, NextFunction} from "express";
 import {verify} from "jsonwebtoken";
-import {ResponseCodes} from "../../models/response/responseCodes";
+import {ResponseCodes} from "../../models/util/response/responseCodes";
 
-import ITokenPayload from "../../models/jwt/tokenPayloadInterface";
+import ITokenPayload from "../../models/util/jwt/tokenPayloadInterface";
 
 export default function verifyRequestAuthenticated(req: Request, res: Response, next: NextFunction) {
     try {

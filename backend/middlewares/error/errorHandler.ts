@@ -1,8 +1,8 @@
 import {Request, Response, NextFunction} from "express";
 import {Logger} from "log4js";
 
-import JSONResponse from "../../models/response/jsonGenericResponseModel";
-import {ResponseCodes} from "../../models/response/responseCodes";
+import JSONResponse from "../../models/util/response/jsonGenericResponseModel";
+import {ResponseCodes} from "../../models/util/response/responseCodes";
 
 function handleFinalError(err: Error, req: Request, res: Response, next: NextFunction) {
 

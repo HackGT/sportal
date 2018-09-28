@@ -3,7 +3,7 @@ import {S3} from "aws-sdk";
 import {tmpNameSync} from "tmp";
 import * as archiver from "archiver";
 
-import {ResponseCodes} from "../../../models/response/responseCodes";
+import {ResponseCodes} from "../../../models/util/response/responseCodes";
 
 interface IGetBulkResumeRequest {
     resumes: string[];
@@ -11,7 +11,7 @@ interface IGetBulkResumeRequest {
 
 const router = Router();
 
-router.post("/", async (req, res, next) => {
+router.get("/", async (req, res, next) => {
     const resumeBulkRequest = req.body as IGetBulkResumeRequest;
     if (!resumeBulkRequest || !resumeBulkRequest.resumes) {
         res.status(ResponseCodes.ERROR_BAD_REQUEST)

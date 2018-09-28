@@ -2,8 +2,8 @@ import {Router} from "express";
 import {compare} from "bcrypt";
 
 import {IUser, getUserProfile} from "../../models/user/userModel";
-import {createToken} from "../../models/jwt/tokenModel";
-import {ResponseCodes} from "../../models/response/responseCodes";
+import {createToken} from "../../models/util/jwt/tokenModel";
+import {ResponseCodes} from "../../models/util/response/responseCodes";
 
 class LoginRequest {
     public email: string;
@@ -35,7 +35,7 @@ router.post("/", async (req, res, next) => {
     }
     let profile: IUser;
     try {
-        profile = await getUserProfile(loginRequest.email);
+        profile = await getUserProfile(req.app.get("config").databaseConnectionString, loginRequest.email);
     }
     catch (err) {
         res.status(ResponseCodes.ERROR_UNAUTHORIZED);

@@ -1,6 +1,6 @@
 import {Request, Response, NextFunction} from "express";
 
-import {ResponseCodes} from "../../models/response/responseCodes";
+import {ResponseCodes} from "../../models/util/response/responseCodes";
 
 function handleNotFound(req: Request, res: Response, next: NextFunction) {
     const err = new Error("Not Found");
