@@ -1,7 +1,7 @@
 import {Router} from "express";
 
 import {addUser} from "../models/user/userModel";
-import {ResponseCodes} from "../models/response/responseCodes";
+import {ResponseCodes} from "../models/util/response/responseCodes";
 
 import renew from "./user/renew";
 import login from "./user/login";
@@ -28,7 +28,7 @@ router.put('/', async (req, res, next) => {
     }
     if (addUserRequest.apiKey === req.app.get("config").serverAdminApiKey) {
         try {
-            await addUser(addUserRequest.email, addUserRequest.password, addUserRequest.orgId);
+            await addUser(req.app.get("config").databaseConnectionString, addUserRequest.email, addUserRequest.password, addUserRequest.orgId);
             res.status(ResponseCodes.SUCCESS);
             req.routed = true;
             next();
