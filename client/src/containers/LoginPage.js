@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Container, Segment, Form, Button } from 'semantic-ui-react';
 import DebugHelper from '../debug/debug';
 import { HOST } from '../constants/configs';
-import { ACTION_UI_ERROR_SHOW, ACTION_USER_LOGIN } from '../constants/actions';
+import { ACTION_UI_ERROR_SHOW, ACTION_USER_LOGIN, ACTION_USER_RENEW_TOKEN } from '../constants/actions';
 
 class LoginPage extends Component {
     constructor(props) {
@@ -97,6 +97,39 @@ const mapDispatchToProps = (dispatch) => {
                     });
                     window.localStorage.setItem("username", username);
                     window.localStorage.setItem("token", json.jwt);
+                    // Renew token every 5 min
+                    setInterval(() => {
+                        console.log('renew token now');
+                        fetch(`${HOST}/user/renew`, {
+                            method: 'GET',
+                            mode: 'cors',
+                            headers: new Headers({
+                                'Authorization': `Bearer ${window.localStorage.getItem("token")}`,
+                                'Content-Type': 'application/json'
+                            }),
+                            body: JSON.stringify({})
+                        }).then(response => {
+                            if (response.ok) {
+                                return response.json();
+                            }
+                            throw new Error('Error: Connection lost. Please check your Internet connection and reload page.');
+                        }).then(json => {
+                            window.localStorage.setItem('token', json.jwt);
+                            dispatch({
+                                type: ACTION_USER_RENEW_TOKEN,
+                                payload: {
+                                    token: json.jwt
+                                }
+                            })
+                        }).catch((error) => {
+                            dispatch({
+                                type: ACTION_UI_ERROR_SHOW,
+                                payload: {
+                                    message: error.message,
+                                }
+                            })
+                        });
+                    }, 300000)
                 }
             })
             .catch((error) => {

@@ -1,17 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Grid, Dimmer, Loader, Input, Button, Icon, Form } from 'semantic-ui-react';
+import { Grid, Dimmer, Loader, Input, Button, Form, Dropdown, Menu, Pagination } from 'semantic-ui-react';
 import ParticipantsTable from '../components/ParticipantsTable';
 import ResumeView from '../components/ResumeView';
-import { ACTION_UI_SEARCH_STRING } from '../constants/actions';
-import { selectParticipant, starParticipant, unstarParticipant, loadParticipants } from '../actions/participants';
+import { ACTION_UI_SEARCH_STRING, ACTION_UI_CHANGE_VIEW_MODE } from '../constants/actions';
+import { selectParticipant, starParticipant, unstarParticipant, loadParticipants, bulkDownload, changePage } from '../actions/participants';
 
 
 class MainPage extends Component {
     
     render() {
         const participants = this.props.state.participants.list;
+        const page = this.props.state.participants.page;
+        const changePage = this.props.changePage;
         const isTableLoading = this.props.state.participants.isLoading;
+        const viewMode = this.props.state.ui.viewMode;
         const selectedParticipantID = this.props.state.ui.selectedParticipantID;
         const selectedParticipantResumeType = this.props.state.ui.selectedParticipantResumeType;
         const selectedParticipantResumeURL = this.props.state.ui.selectedParticipantResumeURL;
@@ -20,9 +23,15 @@ class MainPage extends Component {
         const unstarParticipant = this.props.unstarParticipant;
         const searchString = this.props.state.ui.searchTerm;
         const changeSearchString = this.props.changeSearchString;
-        // const loadAllParticipants = this.props.loadAllParticipants;
+        const changeViewMode = this.props.changeViewMode;
+        const loadAllParticipants = this.props.loadAllParticipants;
         const loadStarredParticipants = this.props.loadStarredParticipants;
+        const loadVisitedParticipants = this.props.loadVisitedParticipants;
         const loadSearchedParticipants = this.props.loadSearchedParticipants;
+        const downloadAllParticipants = this.props.downloadAllParticipants;
+        const downloadStarredParticipants = this.props.downloadStarredParticipants;
+        const downloadVisitedParticipants = this.props.downloadVisitedParticipants;
+        const downloadCurrentParticipants = this.props.downloadCurrentParticipants;
         
         
         return (
@@ -36,27 +45,78 @@ class MainPage extends Component {
                             <Form
                                 onSubmit={() => {
                                     loadSearchedParticipants(searchString);
+                                    changeViewMode('search');
                                 }}
                             >
                                 <Form.Field>
                                     <Input
                                         fluid
-                                        action="search"
-                                        placeholder="Search..."
+                                        action="Search"
+                                        placeholder="Search for names, skills, etc. (eg. Java, React, John..)"
                                         onChange={(e, data) => changeSearchString(data.value)} value={searchString}
                                     />
                                 </Form.Field>
                             </Form>
-                            <div style={{paddingTop: '20px'}}>
-                                <Button
-                                    color="yellow"
-                                    onClick={() => loadStarredParticipants()}
-                                >
-                                    <Icon name="star" /> View All Starred Participants
-                                </Button>
+                            <div style={{paddingTop: '20px', display: 'flex', justifyContent: 'space-between'}}>
+                                <div>
+                                    <Button.Group>
+                                        <Button
+                                            primary={viewMode === 'all'}
+                                            onClick={() => {
+                                                loadAllParticipants();
+                                                changeViewMode('all');
+                                            }}
+                                        >
+                                            All
+                                        </Button>
+                                        <Button
+                                            primary={viewMode === 'star'}
+                                            onClick={() => {
+                                                loadStarredParticipants();
+                                                changeViewMode('star');
+                                            }}
+                                        >
+                                            Starred
+                                        </Button>
+                                        <Button
+                                            primary={viewMode === 'visit'}
+                                            onClick={() => {
+                                                loadVisitedParticipants();
+                                                changeViewMode('visit')
+                                            }}
+                                        >
+                                            Visited
+                                        </Button>
+                                        {
+                                            viewMode === 'search' && (
+                                                <Button
+                                                    primary
+                                                >
+                                                    Searching
+                                                </Button>
+                                            )
+                                        }
+                                    </Button.Group>
+                                </div>
+                                <div>
+                                    <Menu vertical>
+                                        <Dropdown item text="Download">
+                                            <Dropdown.Menu>
+                                                <Dropdown.Item onClick={downloadAllParticipants}>All</Dropdown.Item>
+                                                <Dropdown.Item onClick={downloadStarredParticipants}>Starred</Dropdown.Item>
+                                                <Dropdown.Item onClick={downloadVisitedParticipants}>Visisted</Dropdown.Item>
+                                                <Dropdown.Item onClick={() => downloadCurrentParticipants(participants)}>Currently Viewing</Dropdown.Item>
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                    </Menu>
+                                </div>
+                                
+                            </div>
+                            <div style={{paddingTop: '20px', textAlign: 'center'}}>
+                                <Pagination pointing secondary activePage={page} totalPages={Math.ceil(participants.length / 8)} onPageChange={(e, { activePage }) => changePage(activePage)} />
                             </div>
                             <ParticipantsTable
-                                participants={participants}
+                                participants={participants.slice((page - 1) * 8, page * 8)}
                                 selectedParticipantID={selectedParticipantID}
                                 selectParticipant={selectParticipant}
                                 starParticipant={starParticipant}
@@ -103,14 +163,40 @@ const mapDispatchToProps = (dispatch) => {
                 }
             })
         },
+        changeViewMode: (mode) => {
+            dispatch({
+                type: ACTION_UI_CHANGE_VIEW_MODE,
+                payload: {
+                    viewMode: mode
+                }
+            });
+        },
         loadAllParticipants: () => {
             dispatch(loadParticipants({}))
         },
         loadStarredParticipants: () => {
             dispatch(loadParticipants({star: true}))
         },
+        loadVisitedParticipants: () => {
+            dispatch(loadParticipants({nfc: true}))
+        },
         loadSearchedParticipants: (searchTerm) => {
             dispatch(loadParticipants({search: searchTerm}))
+        },
+        downloadAllParticipants: () => {
+            dispatch(bulkDownload({all: true}));
+        },
+        downloadStarredParticipants: () => {
+            dispatch(bulkDownload({star: true}));
+        },
+        downloadVisitedParticipants: () => {
+            dispatch(bulkDownload({nfc: true}));
+        },
+        downloadCurrentParticipants: (participants) => {
+            dispatch(bulkDownload({participants: participants}));
+        },
+        changePage: (page) => {
+            dispatch(changePage(page));
         }
     };
 };

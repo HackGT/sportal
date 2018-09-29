@@ -10,11 +10,17 @@ import {
     ACTION_UI_ERROR_SHOW, 
     ACTION_UI_ERROR_HIDE,
     ACTION_UI_GLOBAL_LOADER_SHOW, 
-    ACTION_UI_GLOBAL_LOADER_HIDE 
+    ACTION_UI_GLOBAL_LOADER_HIDE, 
+    ACTION_PARTICIPANTS_STAR_ADD,
+    ACTION_PARTICIPANTS_STAR_REMOVE,
+    ACTION_USER_RENEW_TOKEN,
+    ACTION_UI_CHANGE_VIEW_MODE,
+    ACTION_PARTICIPANTS_CHANGE_PAGE
 } from '../constants/actions';
 
 const initialState = {
     ui: {
+        viewMode: 'all', // 'all', 'star', 'visit', 'search'
         searchTerm: '',
         selectedParticipantID: '',
         selectedParticipantResumeURL: '',
@@ -30,12 +36,17 @@ const initialState = {
     },
     participants: {
         isLoading: false,
+        page: 1,
         list: [],
     }
 };
 
 const ui = (state = initialState.ui, action) => {
     switch (action.type) {
+        case ACTION_UI_CHANGE_VIEW_MODE:
+            return Object.assign({}, state, {
+                viewMode: action.payload.viewMode
+            })
         case ACTION_UI_ERROR_SHOW:
             return Object.assign({}, state, {
                 isErrorModalActive: true,
@@ -77,8 +88,25 @@ const participants = (state = initialState.participants, action) => {
             return Object.assign({}, state, { isLoading: false });
         case ACTION_PARTICIPANTS_LOAD:
             return Object.assign({}, state, {
-                list: action.payload.list
+                list: action.payload.list,
+                page: 1
             });
+        case ACTION_PARTICIPANTS_STAR_ADD:
+            return Object.assign({}, state, {
+                list: state.list.map(participant => Object.assign({}, participant, {
+                    hasStar: (participant.id === action.payload.id) ? true : participant.hasStar
+                }))
+            });
+        case ACTION_PARTICIPANTS_STAR_REMOVE:
+            return Object.assign({}, state, {
+                list: state.list.map(participant => Object.assign({}, participant, {
+                    hasStar: (participant.id === action.payload.id) ? false : participant.hasStar
+                }))
+            });
+        case ACTION_PARTICIPANTS_CHANGE_PAGE:
+            return Object.assign({}, state, {
+                page: action.payload.page
+            })
         default:
             return state;
     }
@@ -97,6 +125,10 @@ const user = (state = initialState.user, action) => {
                 isLoggedIn: false,
                 username: '',
                 token: ''
+            });
+        case ACTION_USER_RENEW_TOKEN:
+            return Object.assign({}, state, {
+                token: action.payload.token
             });
         default:
             return state;

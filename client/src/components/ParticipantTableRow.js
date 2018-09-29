@@ -6,30 +6,34 @@ class ParticipantTableRow extends React.Component {
         const isSelected = this.props.isSelected;
         const participant = this.props.participant;
         const onSelect = this.props.onSelect;
+        const onStar = this.props.onStar;
+        const onDownload = this.props.onDownload;
 
         return (
             <Table.Row>
                 <Table.Cell>
                     { isSelected ? <Label ribbon>Viewing</Label> : null }
-                    {
-                        participant.hasStar ? <Button basic icon="star" /> : <Button basic icon="star outline" />
-                    }
+                    
                 </Table.Cell>
                 <Table.Cell>
                     { participant.name }
                 </Table.Cell>
                 <Table.Cell>
-                    { participant.email }
+                    <a href={`mailto:${participant.email}`}>{ participant.email }</a>
                 </Table.Cell>
                 <Table.Cell>
-                    <Button.Group basic>
+                    <Button.Group>
+                        {
+                            participant.hasStar ? <Button basic icon="star" onClick={onStar} /> : <Button basic icon="star outline" onClick={onStar} />
+                        }
                         <Button
+                            basic
                             icon="eye"
                             onClick={() => {
                                 onSelect();
                             }}
                         />
-                        <Button icon="download" />
+                        <Button basic icon="download" onClick={onDownload}/>
                     </Button.Group>
                 </Table.Cell>
             </Table.Row>

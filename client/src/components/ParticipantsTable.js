@@ -18,7 +18,7 @@ class ParticipantsTable extends React.Component {
                         <Table.HeaderCell></Table.HeaderCell>
                         <Table.HeaderCell>Name</Table.HeaderCell>
                         <Table.HeaderCell>Email</Table.HeaderCell>
-                        <Table.HeaderCell></Table.HeaderCell>
+                        <Table.HeaderCell>Actions</Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>

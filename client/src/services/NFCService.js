@@ -1,4 +1,5 @@
 import { loadParticipants, selectParticipant } from "../actions/participants";
+import { ACTION_UI_CHANGE_VIEW_MODE } from "../constants/actions";
 
 /**
  * This class listens on the provide websocket url,
@@ -40,6 +41,12 @@ class NFCService {
         // TODO: dispatch loadParticipantsWithID and selectParticipant
         this.store.dispatch(loadParticipants({ids: [id]}));
         this.store.dispatch(selectParticipant(id));
+        this.store.dispatch({
+            type: ACTION_UI_CHANGE_VIEW_MODE,
+            payload: {
+                viewMode: 'visit'
+            }
+        });
     }
 }
 

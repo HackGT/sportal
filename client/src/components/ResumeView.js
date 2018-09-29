@@ -20,7 +20,7 @@ class ResumeView extends Component {
             <Document
               file={selectedParticipantResumeURL}
             >
-              <Page pageNumber={1} scale={1.2} />
+              <Page pageNumber={1} scale={1.8} />
             </Document>
         );
 
