@@ -2,19 +2,11 @@ import * as express from "express";
 import * as compression from "compression";
 import {Logger, getLogger} from "log4js";
 import * as AWS from "aws-sdk";
+import {join} from "path";
 
+import api from "./api";
 import {loadConfig} from "./config";
-import notFoundHandler from "./middlewares/error/notFoundHandler";
-import errorHandler from "./middlewares/error/errorHandler";
-
-// Auth
-import requireAuth from "./middlewares/auth/verify";
-
-// Controllers (route handlers)
-import user from "./controllers/user";
-import participant from "./controllers/participant";
-import successHandler from "./middlewares/success/successHandler";
-
+import { ResponseCodes } from "./models/util/response/responseCodes";
 // Create Express server
 const app: express.Application = express();
 
@@ -36,35 +28,20 @@ if (app.get("config").serverEnv === "development") {
 }
 app.set("logger", logger);
 
-// Enable CORS
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.header("Access-Control-Allow-Credentials", "true");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-    next();
+app.use("/api", api)
+
+/**
+ * Serve static react client
+ */
+app.use(express.static(join(__dirname, "../client/build")));
+
+/**
+ * 404 Redirect to react client
+ */
+app.use((req, res) => {
+    res.status(ResponseCodes.FOUND);
+    res.set("Location", req.hostname + "/");
 });
 
-/**
- * Primary app routes.
- */
-app.use("/user", user);
-app.use("/participant", requireAuth, participant);
-
-/**
- * Final Success Handler
- * This will pass requests with no status set to the 404 handler
- */
-app.use(successHandler);
-
-/**
- * 404 Error Handler
- */
-app.use(notFoundHandler);
-
-/**
- * Error Passthrough
- * Sends back 500 Internal Server Error if catching error
- */
-app.use(errorHandler);
 
 export default app;
