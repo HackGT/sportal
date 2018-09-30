@@ -189,7 +189,12 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(loadParticipants({nfc: true}))
         },
         loadSearchedParticipants: (searchTerm) => {
-            dispatch(loadParticipants({search: searchTerm}))
+            // If searching empty string, show all participants
+            if (searchTerm === '') {
+                dispatch(loadParticipants({}))
+            } else {
+                dispatch(loadParticipants({search: searchTerm}));
+            }
         },
         downloadAllParticipants: () => {
             dispatch(bulkDownload({all: true}));

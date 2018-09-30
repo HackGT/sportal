@@ -7,14 +7,20 @@ import configureStore from './configureStore';
 import App from './App';
 import NFCService from './services/NFCService';
 import DebugHelper from './debug/debug';
-import { NFC_WS_URL, HOST } from './constants/configs';
-import { ACTION_USER_LOGIN, ACTION_USER_RENEW_TOKEN, ACTION_UI_ERROR_SHOW } from './constants/actions';
+import { NFC_WS_URL } from './constants/configs';
+import { ACTION_USER_LOGIN } from './constants/actions';
+import { loadParticipants } from './actions/participants';
+import AuthService from './services/AuthService';
 
 const store = configureStore();
 
 // Initialize NFCService for NFC functionalities.
 const nfcService = new NFCService(store, NFC_WS_URL);
 window.nfcService = nfcService;
+
+// Initialize AuthService
+const authService = new AuthService(store);
+window.authService = authService;
 
 // If valid JWT exists, log in the user directly
 const token = window.localStorage.getItem('token');
@@ -33,39 +39,11 @@ if (token && username && token !== '') {
             }
         });
 
+        store.dispatch(loadParticipants({}));
+
         // Renew token every 5 min
-        setInterval(() => {
-            console.log('renew token now');
-            fetch(`${HOST}/user/renew`, {
-                method: 'GET',
-                mode: 'cors',
-                headers: new Headers({
-                    'Authorization': `Bearer ${window.localStorage.getItem("token")}`,
-                    'Content-Type': 'application/json'
-                }),
-                body: JSON.stringify({})
-            }).then(response => {
-                if (response.ok) {
-                    return response.json();
-                }
-                throw new Error('Error: Connection lost. Please check your Internet connection and reload page.');
-            }).then(json => {
-                window.localStorage.setItem('token', json.jwt);
-                store.dispatch({
-                    type: ACTION_USER_RENEW_TOKEN,
-                    payload: {
-                        token: json.jwt
-                    }
-                })
-            }).catch((error) => {
-                store.dispatch({
-                    type: ACTION_UI_ERROR_SHOW,
-                    payload: {
-                        message: error.message,
-                    }
-                })
-            });
-        }, 300000)
+        authService.startAutoRenew();
+        
     }
 }
 

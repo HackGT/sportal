@@ -31,7 +31,7 @@ export function loadParticipants({ids = null, search = null, star = false, nfc =
             promise = loadParticipantsWithNFC();
         } else {
             // No config, load all
-            promise = loadParticipantsWithSearch('');
+            promise = loadParticipantsAll();
         }
 
         promise
@@ -102,12 +102,24 @@ function loadParticipantsWithIDs(listOfID) {
         mode: 'cors',
         credentials: 'include',
         headers: new Headers({
-            'Authorization': `Bearer ${window.localStorage.getItem("token")}`,
+            'Authorization': `Bearer ${window.authService.getUserState().token}`,
             'Content-Type': 'application/json'
         }),
         body: JSON.stringify({
             registration_ids: listOfID
         })
+    });
+}
+
+function loadParticipantsAll() {
+    return fetch(`${HOST}/participant/all`, {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'include',
+        headers: new Headers({
+            'Authorization': `Bearer ${window.authService.getUserState().token}`,
+            'Content-Type': 'application/json'
+        }),
     });
 }
 
@@ -117,7 +129,7 @@ function loadParticipantsWithSearch(searchTerm) {
         mode: 'cors',
         credentials: 'include',
         headers: new Headers({
-            'Authorization': `Bearer ${window.localStorage.getItem("token")}`,
+            'Authorization': `Bearer ${window.authService.getUserState().token}`,
             'Content-Type': 'application/json'
         }),
         body: JSON.stringify({
@@ -134,7 +146,7 @@ function loadParticipantsWithStars() {
         mode: 'cors',
         credentials: 'include',
         headers: new Headers({
-            'Authorization': `Bearer ${window.localStorage.getItem("token")}`,
+            'Authorization': `Bearer ${window.authService.getUserState().token}`,
             'Content-Type': 'application/json'
         }),
         body: JSON.stringify({
@@ -151,7 +163,7 @@ function loadParticipantsWithNFC() {
         mode: 'cors',
         credentials: 'include',
         headers: new Headers({
-            'Authorization': `Bearer ${window.localStorage.getItem("token")}`,
+            'Authorization': `Bearer ${window.authService.getUserState().token}`,
             'Content-Type': 'application/json'
         }),
         body: JSON.stringify({
@@ -167,7 +179,7 @@ export function selectParticipant(participant) {
             mode: 'cors',
             credentials: 'include',
             headers: new Headers({
-                'Authorization': `Bearer ${window.localStorage.getItem("token")}`,
+                'Authorization': `Bearer ${window.authService.getUserState().token}`,
                 'Content-Type': 'application/json'
             }),
             body: JSON.stringify({
@@ -213,7 +225,7 @@ export function starParticipant(id) {
             mode: 'cors',
             credentials: 'include',
             headers: new Headers({
-                'Authorization': `Bearer ${window.localStorage.getItem("token")}`,
+                'Authorization': `Bearer ${window.authService.getUserState().token}`,
                 'Content-Type': 'application/json'
             }),
             body: JSON.stringify({
@@ -263,7 +275,7 @@ export function unstarParticipant(id) {
             mode: 'cors',
             credentials: 'include',
             headers: new Headers({
-                'Authorization': `Bearer ${window.localStorage.getItem("token")}`,
+                'Authorization': `Bearer ${window.authService.getUserState().token}`,
                 'Content-Type': 'application/json'
             }),
             body: JSON.stringify({
@@ -332,7 +344,7 @@ export function downloadParticipantResume(participant) {
         mode: 'cors',
         credentials: 'include',
         headers: new Headers({
-            'Authorization': `Bearer ${window.localStorage.getItem("token")}`,
+            'Authorization': `Bearer ${window.authService.getUserState().token}`,
             'Content-Type': 'application/json'
         }),
         body: JSON.stringify({
@@ -363,7 +375,7 @@ export function bulkDownload({all=false, star=false, nfc=false, participants=nul
         let promise = null;
 
         if (all) {
-            promise = loadParticipantsWithSearch('');
+            promise = loadParticipantsAll();
         } else if (star) {
             promise = loadParticipantsWithStars();
         } else if (nfc) {
@@ -396,11 +408,11 @@ export function bulkDownload({all=false, star=false, nfc=false, participants=nul
 
 function bulkDownloadWithIDs(listOfResumeIDs) {
     return fetch(`${HOST}/participant/resume/bulk`, {
-        method: 'GET',
+        method: 'POST',
         mode: 'cors',
         credentials: 'include',
         headers: new Headers({
-            'Authorization': `Bearer ${window.localStorage.getItem("token")}`,
+            'Authorization': `Bearer ${window.authService.getUserState().token}`,
             'Content-Type': 'application/json'
         }),
         body: JSON.stringify({

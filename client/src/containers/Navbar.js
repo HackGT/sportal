@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Button, Menu, Header, Segment } from 'semantic-ui-react';
 import { TITLE } from '../constants/configs';
-import { ACTION_USER_LOGOUT } from '../constants/actions';
 
 class Navbar extends React.Component {
     render() {
@@ -45,14 +44,10 @@ const mapStateToProps = (state) => {
     };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = () => {
     return {
         actionLogout: () => {
-            dispatch({
-                type: ACTION_USER_LOGOUT
-            });
-            window.localStorage.removeItem('token');
-            window.localStorage.removeItem('username');
+            window.authService.logout();
         }
     };
 };

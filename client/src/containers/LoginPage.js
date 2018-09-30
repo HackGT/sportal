@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Segment, Form, Button } from 'semantic-ui-react';
-import DebugHelper from '../debug/debug';
-import { HOST } from '../constants/configs';
-import { ACTION_UI_ERROR_SHOW, ACTION_USER_LOGIN, ACTION_USER_RENEW_TOKEN } from '../constants/actions';
 
 class LoginPage extends Component {
     constructor(props) {
@@ -52,94 +49,10 @@ const mapStateToProps = (state) => {
     };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = () => {
     return {
         actionLogin: (username, password) => {
-            if (username === 'test' && password === 'test') {
-                DebugHelper.login();
-                return;
-            }
-            fetch(`${HOST}/user/login`, {
-                method: 'POST',
-                mode: 'cors',
-                headers: new Headers({
-                    'Content-Type': 'application/json'
-                }),
-                body: JSON.stringify({
-                    email: username,
-                    password,
-                })
-            })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                }
-                if (response.status === 403 || response.status === 401) {
-                    throw new Error('Error: Invalid Credentials.');
-                }
-                throw new Error('Error: Connection lost. Please check your Internet connection and reload page.');
-            })
-            .then(json => {
-                if (!json.jwt) {
-                    dispatch({
-                        type: ACTION_UI_ERROR_SHOW,
-                        payload: {
-                            message: 'Error: Invalid Credentials.'
-                        }
-                    })
-                } else {
-                    dispatch({
-                        type: ACTION_USER_LOGIN,
-                        payload: {
-                            username: username,
-                            token: json.jwt
-                        }
-                    });
-                    window.localStorage.setItem("username", username);
-                    window.localStorage.setItem("token", json.jwt);
-                    // Renew token every 5 min
-                    setInterval(() => {
-                        console.log('renew token now');
-                        fetch(`${HOST}/user/renew`, {
-                            method: 'GET',
-                            mode: 'cors',
-                            headers: new Headers({
-                                'Authorization': `Bearer ${window.localStorage.getItem("token")}`,
-                                'Content-Type': 'application/json'
-                            }),
-                            body: JSON.stringify({})
-                        }).then(response => {
-                            if (response.ok) {
-                                return response.json();
-                            }
-                            throw new Error('Error: Connection lost. Please check your Internet connection and reload page.');
-                        }).then(json => {
-                            window.localStorage.setItem('token', json.jwt);
-                            dispatch({
-                                type: ACTION_USER_RENEW_TOKEN,
-                                payload: {
-                                    token: json.jwt
-                                }
-                            })
-                        }).catch((error) => {
-                            dispatch({
-                                type: ACTION_UI_ERROR_SHOW,
-                                payload: {
-                                    message: error.message,
-                                }
-                            })
-                        });
-                    }, 300000)
-                }
-            })
-            .catch((error) => {
-                dispatch({
-                    type: ACTION_UI_ERROR_SHOW,
-                    payload: {
-                        message: error.message
-                    }
-                })
-            });
+            window.authService.login(username, password);
         }
     };
 };
