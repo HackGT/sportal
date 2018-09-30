@@ -42,6 +42,7 @@ if (token && username && token !== '') {
         store.dispatch(loadParticipants({}));
 
         // Renew token every 5 min
+        authService.renewToken();
         authService.startAutoRenew();
         
     }

@@ -12,36 +12,40 @@ class AuthService {
         return this.store.getState().user;
     }
 
+    renewToken() {
+        fetch(`${HOST}/user/renew`, {
+            method: 'GET',
+            mode: 'cors',
+            headers: new Headers({
+                'Authorization': `Bearer ${this.store.getState().user.token}`
+            }),
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Error: Connection lost. Please check your Internet connection and reload page.');
+        }).then(json => {
+            window.localStorage.setItem('token', json.jwt);
+            this.store.dispatch({
+                type: ACTION_USER_RENEW_TOKEN,
+                payload: {
+                    token: json.jwt
+                }
+            })
+        }).catch((error) => {
+            this.store.dispatch({
+                type: ACTION_UI_ERROR_SHOW,
+                payload: {
+                    message: error.message,
+                }
+            })
+        });
+    }
+
     startAutoRenew() {
         setInterval(() => {
             console.log('renew token now');
-            fetch(`${HOST}/user/renew`, {
-                method: 'GET',
-                mode: 'cors',
-                headers: new Headers({
-                    'Authorization': `Bearer ${this.store.getState().user.token}`
-                }),
-            }).then(response => {
-                if (response.ok) {
-                    return response.json();
-                }
-                throw new Error('Error: Connection lost. Please check your Internet connection and reload page.');
-            }).then(json => {
-                window.localStorage.setItem('token', json.jwt);
-                this.store.dispatch({
-                    type: ACTION_USER_RENEW_TOKEN,
-                    payload: {
-                        token: json.jwt
-                    }
-                })
-            }).catch((error) => {
-                this.store.dispatch({
-                    type: ACTION_UI_ERROR_SHOW,
-                    payload: {
-                        message: error.message,
-                    }
-                })
-            });
+            this.renewToken();
         }, 300000)
     }
 
