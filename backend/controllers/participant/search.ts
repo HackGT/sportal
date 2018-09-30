@@ -11,10 +11,10 @@ interface SearchRequest {
 }
 
 export class SearchResponse {
-    public users: Participant[];
+    public participants: Participant[];
 
-    constructor(users: Participant[]) {
-        this.users = users;
+    constructor(participants: Participant[]) {
+        this.participants = participants;
     }
 }
 
@@ -32,7 +32,7 @@ router.post("/", async (req, res, next) => {
     }
     try {
         // SQL query for full text and by user name and email
-        const participants = await searchToken(req.app.get("config").databaseConnectionString, searchBody.search);
+        const participants = await searchToken(req.app.get("config").databaseConnectionString, req.id as string, searchBody.search);
         const response: SearchResponse = new SearchResponse(participants);
         res.status(ResponseCodes.SUCCESS);
         req.routed = true;
