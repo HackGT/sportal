@@ -9,7 +9,7 @@ class AuthService {
     }
 
     getUserState() {
-        return this.store.state.user;
+        return this.store.getState().user;
     }
 
     startAutoRenew() {
@@ -19,7 +19,7 @@ class AuthService {
                 method: 'GET',
                 mode: 'cors',
                 headers: new Headers({
-                    'Authorization': `Bearer ${this.store.state.user.token}`,
+                    'Authorization': `Bearer ${this.store.getState().user.token}`,
                     'Content-Type': 'application/json'
                 }),
                 body: JSON.stringify({})
