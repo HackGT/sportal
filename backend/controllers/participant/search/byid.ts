@@ -3,7 +3,7 @@ import {Router} from "express";
 import {ResponseCodes} from "../../../models/util/response/responseCodes";
 import { Participant, searchByIds } from "../../../models/participant/participantModel";
 
-interface SearchByIdRequest {
+interface ISearchByIdRequest {
     ids: string[];
 }
 
@@ -18,14 +18,14 @@ export class SearchByIdResponse {
 export const router = Router();
 
 router.post("/", async (req, res, next) => {
-    const searchBody = req.body as SearchByIdRequest;
+    const searchBody = req.body as ISearchByIdRequest;
     if (!searchBody || !searchBody.ids) {
         res.status(ResponseCodes.ERROR_BAD_REQUEST)
         next(new Error("Request missing search parameters"));
         return;
     }
     try {
-        const participants = await searchByIds(req.app.get("config").databaseConnectionString, searchBody.ids);
+        const participants = await searchByIds(req.app.get("config").databaseConnectionString, req.id as string, searchBody.ids);
         const response: SearchByIdResponse = new SearchByIdResponse(participants);
         res.status(ResponseCodes.SUCCESS);
         req.routed = true;

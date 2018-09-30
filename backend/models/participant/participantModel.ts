@@ -28,29 +28,60 @@ export class ReturnedTagObject {
     }
 }
 
-export async function searchToken(databaseConnectionString: string, queryStr: string) {
+export async function getAllParticipants(databaseConnectionString: string, user_id: string): Promise<Participant[]> {
+    const getAllQuery = "SELECT tags -> $1 as tags, blob FROM participant;";
+    const postgresClient = pgp();
+    const db = postgresClient(databaseConnectionString);
+    const result = await db.query(getAllQuery, [user_id]);
+    await postgresClient.end();
+    const participants: Participant[] = [];
+    for (let i: number = 0; i < result.length; i++) {
+        if (result[i].tags) {
+            result[i].blob.tags = result[i].tags;
+        } else {
+            result[i].blob.tags = [];
+        }
+        participants.push(result[i].blob);
+    }
+    return participants;
+}
+
+export async function searchToken(databaseConnectionString: string, user_id: string, queryStr: string): Promise<Participant[]> {
     // process token to comply with to_tsquery
     const tokens = queryStr.split(/(\s+)/).filter( function(e) { return e.trim().length > 0; } );
     const tsquery = tokens.join(' | ');
 
     // perform full-text search
-    const ftsQuery = "SELECT registration_id, tags, blob FROM participant WHERE document @@ to_tsquery($1);";
+    const ftsQuery = "SELECT tags -> $1 as tags, blob FROM participant WHERE document @@ to_tsquery($2);";
     const postgresClient = pgp();
     const db = postgresClient(databaseConnectionString);
-    const result = await db.query(ftsQuery, [tsquery]);
+    const result = await db.query(ftsQuery, [user_id, tsquery]);
+    const participants: Participant[] = [];
+    for (let i: number = 0; i < result.length; i++) {
+        if (result[i].tags) {
+            result[i].blob.tags = result[i].tags;
+        } else {
+            result[i].blob.tags = [];
+        }
+        participants.push(result[i].blob);
+    }
     await postgresClient.end();
-    return result as Participant[];
+    return participants;
 }
 
-export async function searchByIds(databaseConnectionString: string, ids: string[]): Promise<Participant[]> {
-    const idQuery = "SELECT registration_id, tags, blob FROM participant WHERE registration_id = $1;";
+export async function searchByIds(databaseConnectionString: string, user_id: string, ids: string[]): Promise<Participant[]> {
+    const idQuery = "SELECT tags -> $1 as tags, blob FROM participant WHERE registration_id = $2;";
     const postgresClient = pgp();
     const db = postgresClient(databaseConnectionString);
     const participants: Participant[] = [];
     for (let i: number = 0; i < ids.length; i++) {
-        const result = await db.query(idQuery, [ids[i]]);
+        const result = await db.query(idQuery, [user_id, ids[i]]);
         const blob = result[0].blob;
-        blob.tags = result[0].tags;
+        if (result[0].tags) {
+            blob.tags = result[0].tags;
+        } else {
+            blob.tags = [];
+        }
         participants.push(blob as Participant);
     }
     await postgresClient.end();
@@ -59,14 +90,18 @@ export async function searchByIds(databaseConnectionString: string, ids: string[
 
 export async function searchByTag(databaseConnectionString: string, user_id: string, tag: string): Promise<Participant[]> {
     
-    const tagQuery = "SELECT registration_id, tags -> $1 AS tags, blob FROM participant WHERE tags -> $1 ? $2;";
+    const tagQuery = "SELECT tags -> $1 AS tags, blob FROM participant WHERE tags -> $1 ? $2;";
     const postgresClient = pgp();
     const db = postgresClient(databaseConnectionString);
     const result = await db.query(tagQuery, [user_id, tag]);
     await postgresClient.end();
     const participants: Participant[] = [];
     for (let i: number = 0; i < result.length; i++) {
-        result[i].blob.tags = result[i].tags[user_id];
+        if (result[i].tags) {
+            result[i].blob.tags = result[i].tags;
+        } else {
+            result[i].blob.tags = [];
+        }
         participants.push(result[i].blob);
     }
     return participants as Participant[];

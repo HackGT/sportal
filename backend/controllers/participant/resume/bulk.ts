@@ -11,7 +11,7 @@ interface IGetBulkResumeRequest {
 
 const router = Router();
 
-router.get("/", async (req, res, next) => {
+router.post("/", async (req, res, next) => {
     const resumeBulkRequest = req.body as IGetBulkResumeRequest;
     if (!resumeBulkRequest || !resumeBulkRequest.resumes) {
         res.status(ResponseCodes.ERROR_BAD_REQUEST)
@@ -20,7 +20,8 @@ router.get("/", async (req, res, next) => {
     }
     try {
         const s3 = new S3();
-        const tempZipFileName = tmpNameSync({prefix: "resumes-bulk-", postfix: ".zip"});
+        const tempZipFileNameSplit = tmpNameSync({prefix: "resumes-bulk-", postfix: ".zip"}).split("\\");
+        const tempZipFileName = tempZipFileNameSplit[tempZipFileNameSplit.length - 1];
         const archive = archiver("zip", {zlib: {level: req.app.get("config").zlibCompressionLevel}});
         res.status(ResponseCodes.SUCCESS);
         res.header("Content-type", "application/octet-stream");

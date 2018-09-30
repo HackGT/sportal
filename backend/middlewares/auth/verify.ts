@@ -6,9 +6,13 @@ import ITokenPayload from "../../models/util/jwt/tokenPayloadInterface";
 
 export default function verifyRequestAuthenticated(req: Request, res: Response, next: NextFunction) {
     try {
-        const payload = verify(retrieveTokenFromHeader(req), req.app.get("config").authSecret);
-        req.id = (payload as ITokenPayload).id;
-        next();
+        if (req.method !== "OPTIONS") {
+            const payload = verify(retrieveTokenFromHeader(req), req.app.get("config").authSecret);
+            req.id = (payload as ITokenPayload).id;
+            next(); 
+        } else {
+            next();
+        }
     } catch (err) {
         res.status(ResponseCodes.ERROR_UNAUTHORIZED);
         req.routed = true;

@@ -3,7 +3,7 @@ import {Router} from "express";
 import {ResponseCodes} from "../../../models/util/response/responseCodes";
 import { Participant, searchByTag } from "../../../models/participant/participantModel";
 
-interface SearchByTagRequest {
+interface ISearchByTagRequest {
     tag: string;
 }
 
@@ -18,7 +18,7 @@ export class SearchByTagResponse {
 export const router = Router();
 
 router.post("/", async (req, res, next) => {
-    const searchBody = req.body as SearchByTagRequest;
+    const searchBody = req.body as ISearchByTagRequest;
     if (!searchBody || !searchBody.tag) {
         res.status(ResponseCodes.ERROR_BAD_REQUEST)
         next(new Error("Request missing search parameters"));
