@@ -104,7 +104,7 @@ class MainPage extends Component {
                                             <Dropdown.Menu>
                                                 <Dropdown.Item onClick={downloadAllParticipants}>All</Dropdown.Item>
                                                 <Dropdown.Item onClick={downloadStarredParticipants}>Starred</Dropdown.Item>
-                                                <Dropdown.Item onClick={downloadVisitedParticipants}>Visisted</Dropdown.Item>
+                                                <Dropdown.Item onClick={downloadVisitedParticipants}>Visited</Dropdown.Item>
                                                 <Dropdown.Item onClick={() => downloadCurrentParticipants(participants)}>Currently Viewing</Dropdown.Item>
                                             </Dropdown.Menu>
                                         </Dropdown>
