@@ -320,24 +320,24 @@ export function unstarParticipant(id) {
  * @param {*} id 
  */
 export function downloadParticipantResume(participant) {    
-    function downloadHelper(url) {
-        /*
-        * Try to load the pdf without being recogized as a pop up
-        * This has different behaviors depending on browsers 
-        */
-        const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-        if (isChrome) {
-            // Should work on Chrome and Webkit
-            // Use anchor element to avoid being recognized as pop up
-            const link = document.createElement('a');
-            link.setAttribute('href', url);
-            link.setAttribute('target', '_blank');
-            link.click();
-        } else {
-            // Works on Firefox
-            window.open(url, '_blank');
-        }
-    }
+    // function downloadHelper(url) {
+    //     /*
+    //     * Try to load the pdf without being recogized as a pop up
+    //     * This has different behaviors depending on browsers 
+    //     */
+    //     const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+    //     if (isChrome) {
+    //         // Should work on Chrome and Webkit
+    //         // Use anchor element to avoid being recognized as pop up
+    //         const link = document.createElement('a');
+    //         link.setAttribute('href', url);
+    //         link.setAttribute('target', '_blank');
+    //         link.click();
+    //     } else {
+    //         // Works on Firefox
+    //         window.open(url, '_blank');
+    //     }
+    // }
 
     fetch(`${HOST}/participant/resume`, {
         method: 'POST',
@@ -358,7 +358,7 @@ export function downloadParticipantResume(participant) {
         throw new Error('Error: Connection lost. Please check your Internet connection and reload page.');
     })
     .then(json => {
-        downloadHelper(json.resumeUrl);
+        download(json.resumeUrl);
     })
     .catch((error) => {
         console.log(error.message);
