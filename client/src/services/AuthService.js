@@ -19,10 +19,8 @@ class AuthService {
                 method: 'GET',
                 mode: 'cors',
                 headers: new Headers({
-                    'Authorization': `Bearer ${this.store.getState().user.token}`,
-                    'Content-Type': 'application/json'
+                    'Authorization': `Bearer ${this.store.getState().user.token}`
                 }),
-                body: JSON.stringify({})
             }).then(response => {
                 if (response.ok) {
                     return response.json();
