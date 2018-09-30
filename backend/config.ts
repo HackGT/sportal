@@ -31,7 +31,8 @@ class Config {
         this.databaseConnectionString,
         this.graphqlRegistrationApiKey,
         this.awsAccessKeyId,
-        this.awsSecretAccessKey
+        this.awsSecretAccessKey,
+        this.awsResumeBucket
     ];
 }
 

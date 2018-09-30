@@ -5,17 +5,16 @@ const SALT_ROUNDS = 10;
 
 export interface IUser {
     id: number;
-    org_id: number;
     email: string;
     password: string;
 }
 
-export async function addUser(databaseConnectionString: string, email: string, password: string, org_id: number) {
-    const addUserQuery = "INSERT INTO sponsors (org_id, email, password) VALUES ($1, $2, $3);";
+export async function addUser(databaseConnectionString: string, email: string, password: string) {
+    const addUserQuery = "INSERT INTO sponsors (email, password) VALUES ($1, $2);";
     const passwordHash = await hash(password, SALT_ROUNDS);
     const postgresClient = new Client(databaseConnectionString);
     await postgresClient.connect();
-    await postgresClient.query(addUserQuery, [org_id, email, passwordHash]);
+    await postgresClient.query(addUserQuery, [email, passwordHash]);
     await postgresClient.end();
 }
 

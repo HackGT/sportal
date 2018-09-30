@@ -5,7 +5,7 @@ import app from "./app";
  */
 const server = app.listen(app.get("config").serverPort, () => {
   console.log(
-    "App is running at http://localhost:%d in %s mode",
+    "App is running at localhost:%d in %s mode",
     app.get("config").serverPort,
     app.get("config").serverEnv
   );

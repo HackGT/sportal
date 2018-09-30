@@ -27,7 +27,6 @@ const router = Router();
 
 router.post("/", async (req, res, next) => {
     const loginRequest = req.body as LoginRequest;
-    console.log(loginRequest);
     if (!loginRequest || !loginRequest.email || !loginRequest.password) {
         res.status(ResponseCodes.ERROR_BAD_REQUEST);
         req.routed = true;

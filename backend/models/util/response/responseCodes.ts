@@ -1,6 +1,8 @@
 export enum ResponseCodes {
     SUCCESS = 200,
 
+    FOUND = 302,
+
     ERROR_BAD_REQUEST = 400,
     ERROR_UNAUTHORIZED = 401,
     ERROR_NOT_FOUND = 404,

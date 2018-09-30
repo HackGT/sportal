@@ -10,7 +10,6 @@ import requireAuth from "../middlewares/auth/verify";
 interface IAddUserRequest {
     email: string;
     password: string;
-    orgId: number;
     apiKey: string;
 }
 
@@ -21,14 +20,14 @@ router.use("/login", login);
 
 router.put('/', async (req, res, next) => {
     const addUserRequest = req.body as IAddUserRequest;
-    if (!addUserRequest || !addUserRequest.email || !addUserRequest.orgId || !addUserRequest.password || !addUserRequest.apiKey) {
+    if (!addUserRequest || !addUserRequest.email || !addUserRequest.password || !addUserRequest.apiKey) {
         res.status(ResponseCodes.ERROR_BAD_REQUEST);
         req.routed = true;
         next(new Error("Request missing user add parameters"));
     }
     if (addUserRequest.apiKey === req.app.get("config").serverAdminApiKey) {
         try {
-            await addUser(req.app.get("config").databaseConnectionString, addUserRequest.email, addUserRequest.password, addUserRequest.orgId);
+            await addUser(req.app.get("config").databaseConnectionString, addUserRequest.email, addUserRequest.password);
             res.status(ResponseCodes.SUCCESS);
             req.routed = true;
             next();

@@ -8,6 +8,10 @@ interface UntagRequest {
     tag: string;
 }
 
+interface UntagResponse {
+    tags: string[]
+}
+
 export const router = Router();
 
 router.post("/", async (req, res, next) => {
@@ -18,9 +22,10 @@ router.post("/", async (req, res, next) => {
         return;
     }
     try {
-        await untagParticipant(req.app.get("config").databaseConnectionString, searchBody.registration_id, searchBody.tag);
+        const tags = await untagParticipant(req.app.get("config").databaseConnectionString, req.id as string, searchBody.registration_id, searchBody.tag);
         res.status(ResponseCodes.SUCCESS);
         req.routed = true;
+        req.returnObject = tags as UntagResponse;
         next();
     } catch (err) {
         res.status(ResponseCodes.ERROR_INTERNAL_SERVER_ERROR);
