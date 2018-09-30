@@ -1,5 +1,5 @@
-import { loadParticipants, selectParticipant } from "../actions/participants";
-import { ACTION_UI_CHANGE_VIEW_MODE } from "../constants/actions";
+import { loadParticipants } from "../actions/participants";
+import { ACTION_UI_CHANGE_VIEW_MODE, ACTION_UI_SELECT_PARTICIPANT_ID } from "../constants/actions";
 
 /**
  * This class listens on the provide websocket url,
@@ -40,7 +40,14 @@ class NFCService {
     onReceiveID(id) {
         // TODO: dispatch loadParticipantsWithID and selectParticipant
         this.store.dispatch(loadParticipants({ids: [id]}));
-        this.store.dispatch(selectParticipant(id));
+        this.store.dispatch({
+            type: ACTION_UI_SELECT_PARTICIPANT_ID,
+            payload: {
+                id: '',
+                resumeType: '',
+                resumeUrl: ''
+            }
+        });
         this.store.dispatch({
             type: ACTION_UI_CHANGE_VIEW_MODE,
             payload: {

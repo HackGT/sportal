@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Button, Label } from 'semantic-ui-react';
+import { Table, Button, Label, Icon } from 'semantic-ui-react';
 
 class ParticipantTableRow extends React.Component {
     render() {
@@ -22,17 +22,20 @@ class ParticipantTableRow extends React.Component {
                     <a href={`mailto:${participant.email}`}>{ participant.email }</a>
                 </Table.Cell>
                 <Table.Cell>
+                    <Button
+                        basic
+                        onClick={() => {
+                            onSelect();
+                        }}
+                    >
+                        <Icon name="eye" />Resume/CV
+                    </Button>
+                </Table.Cell>
+                <Table.Cell>
                     <Button.Group>
                         {
-                            participant.hasStar ? <Button basic icon="star" onClick={onStar} /> : <Button basic icon="star outline" onClick={onStar} />
+                            participant.hasStar ? <Button basic onClick={onStar}><Icon name="star" color="yellow" /></Button> : <Button basic onClick={onStar}><Icon name="star outline" /></Button>
                         }
-                        <Button
-                            basic
-                            icon="eye"
-                            onClick={() => {
-                                onSelect();
-                            }}
-                        />
                         <Button basic icon="download" onClick={onDownload}/>
                     </Button.Group>
                 </Table.Cell>

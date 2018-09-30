@@ -113,7 +113,15 @@ class MainPage extends Component {
                                 
                             </div>
                             <div style={{paddingTop: '20px', textAlign: 'center'}}>
-                                <Pagination pointing secondary activePage={page} totalPages={Math.ceil(participants.length / 8)} onPageChange={(e, { activePage }) => changePage(activePage)} />
+                                <Pagination
+                                    pointing
+                                    secondary
+                                    firstItem={null}
+                                    lastItem={null}
+                                    activePage={page}
+                                    totalPages={Math.ceil(participants.length / 8)}
+                                    onPageChange={(e, { activePage }) => changePage(activePage)}
+                                />
                             </div>
                             <ParticipantsTable
                                 participants={participants.slice((page - 1) * 8, page * 8)}

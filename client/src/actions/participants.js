@@ -56,7 +56,10 @@ export function loadParticipants({ids = null, search = null, star = false, nfc =
                 payload: {
                     message: error.message,
                 }
-            })
+            });
+            dispatch({
+                type: ACTION_PARTICIPANTS_LOAD_END
+            });
         });
     };
 }
@@ -241,7 +244,10 @@ export function starParticipant(id) {
                 payload: {
                     message: error.message
                 }
-            })
+            });
+            dispatch({
+                type: ACTION_UI_GLOBAL_LOADER_HIDE
+            });
         });
     };
 }
@@ -288,7 +294,10 @@ export function unstarParticipant(id) {
                 payload: {
                     message: error.message
                 }
-            })
+            });
+            dispatch({
+                type: ACTION_UI_GLOBAL_LOADER_HIDE
+            });
         });
     };
 }
@@ -348,7 +357,7 @@ export function downloadParticipantResume(participant) {
 export function bulkDownload({all=false, star=false, nfc=false, participants=null}) {
     return dispatch => {
         dispatch({
-            type: ACTION_PARTICIPANTS_LOAD_BEGIN
+            type: ACTION_UI_GLOBAL_LOADER_SHOW
         });
 
         let promise = null;
@@ -380,7 +389,7 @@ export function bulkDownload({all=false, star=false, nfc=false, participants=nul
         }
 
         dispatch({
-            type: ACTION_PARTICIPANTS_LOAD_END
+            type: ACTION_UI_GLOBAL_LOADER_HIDE
         });
     };
 }
