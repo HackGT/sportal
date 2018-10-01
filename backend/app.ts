@@ -2,11 +2,12 @@ import * as express from "express";
 import * as compression from "compression";
 import {Logger, getLogger} from "log4js";
 import * as AWS from "aws-sdk";
-import {join} from "path";
+import {resolve} from "path";
 
 import api from "./api";
 import {loadConfig} from "./config";
-import { ResponseCodes } from "./models/util/response/responseCodes";
+import {ResponseCodes} from "./models/util/response/responseCodes";
+
 // Create Express server
 const app: express.Application = express();
 
@@ -31,16 +32,27 @@ app.set("logger", logger);
 app.use("/api", api)
 
 /**
+ * Log successful client retrieval
+ */
+app.use((req, res, next) => {
+    if (req.originalUrl === "/") {
+        logger.info(req.method + " " + req.originalUrl + ": Retrieve Client");
+    }
+    next();
+});
+
+/**
  * Serve static react client
  */
-app.use(express.static(join(__dirname, "../client/build")));
+app.use(express.static(resolve("../client/build/")));
 
 /**
  * 404 Redirect to react client
  */
 app.use((req, res) => {
+    logger.warn(req.method + " " + req.originalUrl + ": 404 Not Found");
     res.status(ResponseCodes.FOUND);
-    res.set("Location", req.hostname + "/");
+    res.redirect("/");
 });
 
 
