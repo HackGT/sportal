@@ -139,8 +139,6 @@ function loadParticipantsWithSearch(searchTerm) {
 }
 
 function loadParticipantsWithStars() {
-    // TODO: Solidify API parameters
-    // /search/bytag
     return fetch(`${HOST}/participant/search/bytag`, {
         method: 'POST',
         mode: 'cors',
@@ -156,8 +154,6 @@ function loadParticipantsWithStars() {
 }
 
 function loadParticipantsWithNFC() {
-    // TODO: Solidify API parameters
-    // /search/bytag
     return fetch(`${HOST}/participant/search/bytag`, {
         method: 'POST',
         mode: 'cors',

@@ -56,7 +56,4 @@ const renderApp = () => {
     ReactDOM.render(<Provider store={store}><App /></Provider>, document.getElementById('root'));
 };
 
-
-// TODO: add redux specific HMR, see https://redux.js.org/recipes/configuringyourstore
-
 renderApp();
