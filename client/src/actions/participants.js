@@ -368,6 +368,13 @@ export function bulkDownload({all=false, star=false, nfc=false, participants=nul
             type: ACTION_UI_GLOBAL_LOADER_SHOW
         });
 
+        // 5 seconds of loader to prevent user from clicking twice.
+        setTimeout(() => {
+            dispatch({
+                type: ACTION_UI_GLOBAL_LOADER_HIDE
+            });
+        }, 5000);
+
         let promise = null;
 
         if (all) {
@@ -395,10 +402,6 @@ export function bulkDownload({all=false, star=false, nfc=false, participants=nul
                 console.log(error.message);
             })
         }
-
-        dispatch({
-            type: ACTION_UI_GLOBAL_LOADER_HIDE
-        });
     };
 }
 
