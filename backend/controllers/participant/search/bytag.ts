@@ -20,7 +20,8 @@ export const router = Router();
 router.post("/", async (req, res, next) => {
     const searchBody = req.body as ISearchByTagRequest;
     if (!searchBody || !searchBody.tag) {
-        res.status(ResponseCodes.ERROR_BAD_REQUEST)
+        req.routed = true;
+        res.status(ResponseCodes.ERROR_BAD_REQUEST);
         next(new Error("Request missing search parameters"));
         return;
     }

@@ -27,7 +27,7 @@
     "@types/jsonwebtoken": "^7.2.8",
     "@types/log4js": "^2.3.5",
     "@types/pg": "^7.4.10",
-    "@types/tmp": "0.0.33",
+    "@types/uuid": "^3.4.4",
     "archiver": "^3.0.0",
     "aws-sdk": "^2.320.0",
     "bcrypt": "^3.0.0",
@@ -37,8 +37,8 @@
     "jsonwebtoken": "^8.3.0",
     "log4js": "^3.0.5",
     "pg-promise": "^8.4.6",
-    "tmp": "0.0.33",
-    "typescript": "^3.0.3"
+    "typescript": "^3.0.3",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/jest": "^23.3.2",

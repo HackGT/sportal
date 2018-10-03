@@ -2,7 +2,8 @@ import * as express from "express";
 import * as compression from "compression";
 import {Logger, getLogger} from "log4js";
 import * as AWS from "aws-sdk";
-import {resolve} from "path";
+import {join} from "path";
+import {existsSync, mkdirSync} from "fs";
 
 import api from "./api";
 import {loadConfig} from "./config";
@@ -14,8 +15,15 @@ const app: express.Application = express();
 // Express configuration
 const config = loadConfig();
 app.set("config", config);
+// Load Resume State
+app.set("resumeZipState", {})
+// Create Resume Zip Directory
+if (!existsSync(join(process.cwd(), app.get("config").zipDirectory))) {
+    mkdirSync(join(process.cwd(), app.get("config").zipDirectory));
+}
+// Set middleware
 app.use(compression());
-app.use(express.json());
+app.use(express.json({limit: "200kb"}));
 
 // AWS Configuration
 AWS.config.update({accessKeyId: app.get("config").awsAccessKeyId, secretAccessKey: app.get("config").awsSecretAccessKey});
@@ -44,7 +52,7 @@ app.use((req, res, next) => {
 /**
  * Serve static react client
  */
-app.use(express.static(resolve("../client/build/")));
+app.use(express.static(join(__dirname, "../client/build/")));
 
 /**
  * 404 Redirect to react client

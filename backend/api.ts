@@ -6,6 +6,7 @@ import requireAuth from "./middlewares/auth/verify";
 // Controllers (route handlers)
 import user from "./controllers/user";
 import participant from "./controllers/participant";
+import resume from "./controllers/resume";
 import successHandler from "./middlewares/success/successHandler";
 
 // Error handlers
@@ -31,6 +32,7 @@ router.use(function(req, res, next) {
  */
 router.use("/user", user);
 router.use("/participant", requireAuth, participant);
+router.use("/resume", resume);
 
 /**
  * Final Success Handler

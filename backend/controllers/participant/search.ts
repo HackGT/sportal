@@ -26,7 +26,8 @@ router.use("/bytag", bytag);
 router.post("/", async (req, res, next) => {
     const searchBody = req.body as SearchRequest;
     if (!searchBody) {
-        res.status(ResponseCodes.ERROR_BAD_REQUEST)
+        req.routed = true;
+        res.status(ResponseCodes.ERROR_BAD_REQUEST);
         next(new Error("Request missing search parameters"));
         return;
     }

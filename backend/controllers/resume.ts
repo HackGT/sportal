@@ -2,7 +2,7 @@ import {Router} from "express";
 import {S3} from "aws-sdk";
 
 import bulk from "./resume/bulk";
-import {ResponseCodes} from "../../models/util/response/responseCodes";
+import {ResponseCodes} from "../models/util/response/responseCodes";
 
 interface IGetResumeRequest {
     resume: string;
@@ -22,7 +22,7 @@ router.use("/bulk", bulk);
 router.post('/', async (req, res, next) => {
     const resumeRequest = req.body as IGetResumeRequest;
     if (!resumeRequest || !resumeRequest.resume) {
-        res.status(ResponseCodes.ERROR_BAD_REQUEST)
+        res.status(ResponseCodes.ERROR_BAD_REQUEST);
         req.routed = true;
         next(new Error("Request missing resume key"));
         return;

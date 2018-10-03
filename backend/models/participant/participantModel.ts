@@ -56,6 +56,7 @@ export async function searchToken(databaseConnectionString: string, user_id: str
     const postgresClient = pgp();
     const db = postgresClient(databaseConnectionString);
     const result = await db.query(ftsQuery, [user_id, tsquery]);
+    await postgresClient.end();
     const participants: Participant[] = [];
     for (let i: number = 0; i < result.length; i++) {
         if (result[i].tags) {
@@ -65,7 +66,6 @@ export async function searchToken(databaseConnectionString: string, user_id: str
         }
         participants.push(result[i].blob);
     }
-    await postgresClient.end();
     return participants;
 }
 
@@ -89,7 +89,6 @@ export async function searchByIds(databaseConnectionString: string, user_id: str
 }
 
 export async function searchByTag(databaseConnectionString: string, user_id: string, tag: string): Promise<Participant[]> {
-    
     const tagQuery = "SELECT tags -> $1 AS tags, blob FROM participant WHERE tags -> $1 ? $2;";
     const postgresClient = pgp();
     const db = postgresClient(databaseConnectionString);
