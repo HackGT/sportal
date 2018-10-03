@@ -26,6 +26,12 @@ router.get("/", (req, res, next) => {
         next(new Error("You cannot access this zip file!"));
         return;
     }
+    if (Date.now() > zipState.expires) {
+        req.routed = true;
+        res.status(ResponseCodes.ERROR_GONE);
+        next(new Error("This zip file link has expired!"));
+        return;
+    }
     res.status(ResponseCodes.SUCCESS);
     res.download(join(process.cwd(), req.app.get("config").zipDirectory, "/resumes-bulk-" + request.downloadId + ".zip"));
     req.routed = true;
