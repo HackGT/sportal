@@ -8,6 +8,7 @@ import {join} from "path";
 
 import {ResponseCodes} from "../../../models/util/response/responseCodes";
 import {ZipState, ZipStatus} from "../../../models/util/global/zipStateModel";
+import {LastDownload} from "../../../models/util/global/lastDownloadModel";
 
 interface IPrepareBulkResumeRequest {
     resumes: string[];
@@ -26,13 +27,13 @@ class PrepareBulkResumeResponse {
 const router = Router();
 
 function setZipSuccess(logger: Logger, req: Request, tempId: string) {
-    (req.app.get("zipState")[tempId] as ZipState).status = ZipStatus.READY;
+    ((req.app.get("zipStateMap") as Map<string, ZipState>).get(tempId) as ZipState).status = ZipStatus.READY;
     logger.info("Resume Zip Ready, ID: " + tempId);
 }
 
 function setZipFail(logger: Logger, req: Request, tempId: string, err: archiver.ArchiverError) {
-    (req.app.get("zipState")[tempId] as ZipState).status = ZipStatus.FAILED;
-    logger.info("Resume Zip Ready, ID: " + tempId);
+    ((req.app.get("zipStateMap") as Map<string, ZipState>).get(tempId) as ZipState).status = ZipStatus.FAILED;
+    logger.warn("Resume Zip Failed, ID: " + tempId + ", Error: " +  String(err));
 }
 
 router.post("/", async (req, res, next) => {
@@ -41,6 +42,14 @@ router.post("/", async (req, res, next) => {
         req.routed = true;
         res.status(ResponseCodes.ERROR_BAD_REQUEST);
         next(new Error("Request missing resume list parameter"));
+        return;
+    }
+    const now = Date.now();
+    // Check if the user is exceeding the rate limit
+    if (now < ((req.app.get("lastDownloadMap") as Map<string, LastDownload>).get(req.id as string) as LastDownload).lastDownloaded + req.app.get("config").bulkDownloadLimit) {
+        req.routed = true;
+        res.status(ResponseCodes.ERROR_TOO_MANY_REQUESTS);
+        next(new Error("Too many bulk download requests, please try again in a few minutes!"));
         return;
     }
     try {
@@ -73,7 +82,10 @@ router.post("/", async (req, res, next) => {
         archive.finalize();
 
         // Set the zip state
-        req.app.get("zipState")[tempId] = new ZipState(ZipStatus.PREPARING, Date.now() + req.app.get("config").zipExpires, req.id as string, authToken);
+        (req.app.get("zipStateMap") as Map<string, ZipState>).set(tempId, new ZipState(ZipStatus.PREPARING, now + req.app.get("config").zipExpires, req.id as string, authToken));
+
+        // Record the user's most recent download
+        (req.app.get("lastDownloadMap") as Map<string, LastDownload>).set(req.id as string, new LastDownload(now));
 
         // Craft the response
         const response = new PrepareBulkResumeResponse(tempId, authToken);

@@ -25,7 +25,13 @@ router.post("/", (req, res, next) => {
         next(new Error("Request missing download ID parameter"));
         return;
     }
-    const zipState = (req.app.post("zipState") as any)[request.downloadId] as ZipState;
+    const zipState = (req.app.get("zipStateMap") as Map<string, ZipState>).get(request.downloadId);
+    if (!zipState) {
+        req.routed = true;
+        res.status(ResponseCodes.ERROR_NOT_FOUND);
+        next(new Error("Cannot find zip profile!"));
+        return;
+    }
     if (req.id as string !== zipState.creator) {
         req.routed = true;
         res.status(ResponseCodes.ERROR_UNAUTHORIZED);
