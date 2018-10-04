@@ -89,7 +89,7 @@ router.post("/", async (req, res, next) => {
 
         // Craft the response
         const response = new PrepareBulkResumeResponse(tempId, authToken);
-        res.status(ResponseCodes.SUCCESS);
+        res.status(ResponseCodes.ACCEPTED);
         req.routed = true;
         req.returnObject = response;
         next();

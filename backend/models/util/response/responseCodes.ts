@@ -1,5 +1,6 @@
 export enum ResponseCodes {
     SUCCESS = 200,
+    ACCEPTED = 202,
 
     FOUND = 302,
 

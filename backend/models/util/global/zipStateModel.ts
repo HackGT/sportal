@@ -1,7 +1,8 @@
 export enum ZipStatus {
     PREPARING = "PREPARING",
     READY = "READY",
-    FAILED = "FAILED"
+    FAILED = "FAILED",
+    EXPIRED = "EXPIRED"
 }
 
 export class ZipState {

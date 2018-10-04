@@ -1,7 +1,7 @@
 import {Router} from "express";
 
 import {ResponseCodes} from "../../../models/util/response/responseCodes";
-import {ZipState} from "../../../models/util/global/zipStateModel";
+import {ZipState, ZipStatus} from "../../../models/util/global/zipStateModel";
 
 interface IBulkStatusRequest {
     downloadId: string
@@ -38,7 +38,13 @@ router.post("/", (req, res, next) => {
         next(new Error("You cannot access this zip file!"));
         return;
     }
-    const response = new BulkStatusResponse(zipState.status);
+    let state: string;
+    if (Date.now() >= zipState.expires) {
+        state = ZipStatus.EXPIRED;
+    } else {
+        state = zipState.status;
+    }
+    const response = new BulkStatusResponse(state);
     res.status(ResponseCodes.SUCCESS);
     req.returnObject = response;
     req.routed = true;

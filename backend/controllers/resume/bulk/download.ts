@@ -2,7 +2,7 @@ import {Router} from "express";
 import {join} from "path";
 
 import {ResponseCodes} from "../../../models/util/response/responseCodes";
-import {ZipState} from "../../../models/util/global/zipStateModel";
+import {ZipState, ZipStatus} from "../../../models/util/global/zipStateModel";
 
 interface IBulkDownloadRequest {
     downloadId: string
@@ -26,18 +26,25 @@ router.get("/", (req, res, next) => {
         next(new Error("Cannot find zip profile!"));
         return;
     }
-    if (request.authToken !== zipState.authToken) {
-        req.routed = true;
-        res.status(ResponseCodes.ERROR_UNAUTHORIZED);
-        next(new Error("You cannot access this zip file!"));
-        return;
-    }
     if (Date.now() > zipState.expires) {
         req.routed = true;
         res.status(ResponseCodes.ERROR_GONE);
         next(new Error("This zip file link has expired!"));
         return;
     }
+    if (request.authToken !== zipState.authToken) {
+        req.routed = true;
+        res.status(ResponseCodes.ERROR_UNAUTHORIZED);
+        next(new Error("You cannot access this zip file!"));
+        return;
+    }
+    if (zipState.status !== ZipStatus.READY) {
+        req.routed = true;
+        res.status(ResponseCodes.ERROR_NOT_FOUND);
+        next(new Error("This zip file is not ready yet!"));
+        return;
+    }
+
     res.status(ResponseCodes.SUCCESS);
     res.download(join(process.cwd(), req.app.get("config").zipDirectory, "/resumes-bulk-" + request.downloadId + ".zip"));
     req.routed = true;
