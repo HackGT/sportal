@@ -418,31 +418,26 @@ function bulkDownloadWithIDs(dispatch, listOfResumeIDs) {
             throw new Error('Error: Connection lost. Please check your Internet connection and reload page.');
         }
 
+        const intervalId = setInterval(checkStatus, 3000);
+
         async function checkStatus() {
-            let isPreparing = true;
-            while (isPreparing) {
-                // check status every second
-                await (() => new Promise(resolve => setTimeout(resolve, 1000)));
-                let downloadStatus = await fetchBulkDownloadStatus(dispatch, downloadId);
-                if (downloadStatus === 'PREPARING') {
-                    continue;
-                } else if (downloadStatus === 'READY') {
-                    isPreparing = false;
-                    // Zip file is ready, show dialog with download link
-                    dispatch({
-                        type: ACTION_UI_DOWNLOAD_SHOW,
-                        payload: {
-                            downloadURL: encodeURI(`${HOST}/resume/bulk/download?downloadId=${downloadId}&authToken=${authToken}`)
-                        }
-                    });
-                } else {
-                    // Failed or expired or unknown status
-                    return;
-                }
+            let downloadStatus = await fetchBulkDownloadStatus(dispatch, downloadId);
+            if (downloadStatus === 'PREPARING') {
+                return;
+            } else if (downloadStatus === 'READY') {
+                // Zip file is ready, show dialog with download link
+                dispatch({
+                    type: ACTION_UI_DOWNLOAD_SHOW,
+                    payload: {
+                        downloadURL: encodeURI(`${HOST}/resume/bulk/download?downloadId=${downloadId}&authToken=${authToken}`)
+                    }
+                });
+                clearInterval(intervalId);
+            } else {
+                // Failed or expired or unknown status
+                clearInterval(intervalId);
             }
         }
-
-        checkStatus();
 
     }).catch(error => {
         console.log(error.message);
