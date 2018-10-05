@@ -15,7 +15,9 @@ import {
     ACTION_PARTICIPANTS_STAR_REMOVE,
     ACTION_USER_RENEW_TOKEN,
     ACTION_UI_CHANGE_VIEW_MODE,
-    ACTION_PARTICIPANTS_CHANGE_PAGE
+    ACTION_PARTICIPANTS_CHANGE_PAGE,
+    ACTION_UI_DOWNLOAD_HIDE,
+    ACTION_UI_DOWNLOAD_SHOW
 } from '../constants/actions';
 
 const initialState = {
@@ -27,6 +29,8 @@ const initialState = {
         selectedParticipantResumeType: '',
         isErrorModalActive: false,
         errorModalMessage: '',
+        isDownloadModalActive: false,
+        downloadURL: '',
         isGlobalLoaderActive: false,
     },
     user: {
@@ -74,6 +78,15 @@ const ui = (state = initialState.ui, action) => {
         case ACTION_UI_GLOBAL_LOADER_HIDE:
             return Object.assign({}, state, {
                 isGlobalLoaderActive: false,
+            });
+        case ACTION_UI_DOWNLOAD_SHOW:
+            return Object.assign({}, state, {
+                isDownloadModalActive: true,
+                downloadURL: action.payload.downloadURL,
+            });
+        case ACTION_UI_DOWNLOAD_HIDE:
+            return Object.assign({}, state, {
+                isDownloadModalActive: false,
             });
         default:
             return state;

@@ -9,7 +9,8 @@ import {
     ACTION_UI_GLOBAL_LOADER_HIDE,
     ACTION_PARTICIPANTS_STAR_ADD,
     ACTION_PARTICIPANTS_STAR_REMOVE,
-    ACTION_PARTICIPANTS_CHANGE_PAGE
+    ACTION_PARTICIPANTS_CHANGE_PAGE,
+    ACTION_UI_DOWNLOAD_SHOW
 } from "../constants/actions";
 import { HOST } from "../constants/configs";
 
@@ -51,10 +52,11 @@ export function loadParticipants({ids = null, search = null, star = false, nfc =
             });
         })
         .catch((error) => {
+            console.log(error.message);
             dispatch({
                 type: ACTION_UI_ERROR_SHOW,
                 payload: {
-                    message: error.message,
+                    message: 'Error: Connection lost. Please check your Internet connection and reload page.'
                 }
             });
             dispatch({
@@ -170,7 +172,7 @@ function loadParticipantsWithNFC() {
 
 export function selectParticipant(participant) {
     return dispatch => {
-        fetch(`${HOST}/participant/resume`, {
+        fetch(`${HOST}/resume`, {
             method: 'POST',
             mode: 'cors',
             credentials: 'include',
@@ -199,12 +201,13 @@ export function selectParticipant(participant) {
             });
         })
         .catch((error) => {
+            console.log(error.message);
             dispatch({
                 type: ACTION_UI_ERROR_SHOW,
                 payload: {
-                    message: error.message
+                    message: 'Error: Connection lost. Please check your Internet connection and reload page.'
                 }
-            })
+            });
         });
         
     };
@@ -247,10 +250,11 @@ export function starParticipant(id) {
             });
         })
         .catch((error) => {
+            console.log(error.message);
             dispatch({
                 type: ACTION_UI_ERROR_SHOW,
                 payload: {
-                    message: error.message
+                    message: 'Error: Connection lost. Please check your Internet connection and reload page.'
                 }
             });
             dispatch({
@@ -297,10 +301,11 @@ export function unstarParticipant(id) {
             });
         })
         .catch((error) => {
+            console.log(error.message);
             dispatch({
                 type: ACTION_UI_ERROR_SHOW,
                 payload: {
-                    message: error.message
+                    message: 'Error: Connection lost. Please check your Internet connection and reload page.'
                 }
             });
             dispatch({
@@ -315,27 +320,9 @@ export function unstarParticipant(id) {
  * Fetches URL from backend and force the browser to download from the URL
  * @param {*} id 
  */
-export function downloadParticipantResume(participant) {    
-    // function downloadHelper(url) {
-    //     /*
-    //     * Try to load the pdf without being recogized as a pop up
-    //     * This has different behaviors depending on browsers 
-    //     */
-    //     const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-    //     if (isChrome) {
-    //         // Should work on Chrome and Webkit
-    //         // Use anchor element to avoid being recognized as pop up
-    //         const link = document.createElement('a');
-    //         link.setAttribute('href', url);
-    //         link.setAttribute('target', '_blank');
-    //         link.click();
-    //     } else {
-    //         // Works on Firefox
-    //         window.open(url, '_blank');
-    //     }
-    // }
+export function downloadParticipantResume(participant) {
 
-    fetch(`${HOST}/participant/resume`, {
+    fetch(`${HOST}/resume`, {
         method: 'POST',
         mode: 'cors',
         credentials: 'include',
@@ -368,13 +355,6 @@ export function bulkDownload({all=false, star=false, nfc=false, participants=nul
             type: ACTION_UI_GLOBAL_LOADER_SHOW
         });
 
-        // 5 seconds of loader to prevent user from clicking twice.
-        setTimeout(() => {
-            dispatch({
-                type: ACTION_UI_GLOBAL_LOADER_HIDE
-            });
-        }, 5000);
-
         let promise = null;
 
         if (all) {
@@ -397,17 +377,26 @@ export function bulkDownload({all=false, star=false, nfc=false, participants=nul
                 }
                 throw new Error('Error: Connection lost. Please check your Internet connection and reload page.');
             }).then(json => {
-                bulkDownloadWithIDs(transformParticipantsObjects(json.participants).map(participant => participant.resumeId));
+                bulkDownloadWithIDs(dispatch, transformParticipantsObjects(json.participants).map(participant => participant.resumeId));
             }).catch(error => {
                 console.log(error.message);
+                dispatch({
+                    type: ACTION_UI_ERROR_SHOW,
+                    payload: {
+                        message: 'Error: Connection lost. Please check your Internet connection and reload page.'
+                    }
+                });
+                dispatch({
+                    type: ACTION_UI_GLOBAL_LOADER_HIDE
+                });
             })
         }
     };
 }
 
-function bulkDownloadWithIDs(listOfResumeIDs) {
-    return fetch(`${HOST}/participant/resume/bulk`, {
-        method: 'POST',
+function bulkDownloadWithIDs(dispatch, listOfResumeIDs) {
+    return fetch(`${HOST}/resume/bulk/prepare`, {
+        method: 'GET',
         mode: 'cors',
         credentials: 'include',
         headers: new Headers({
@@ -419,13 +408,129 @@ function bulkDownloadWithIDs(listOfResumeIDs) {
         })
     }).then(response => {
         if (response.ok) {
-            return response.blob();
+            return response.json();
         }
         throw new Error('Error: Connection lost. Please check your Internet connection and reload page.');
-    }).then(blob => {
-        download(blob, 'participant_resume_bundle.zip', 'application/octet-stream');
+    }).then(json => {
+        const downloadId = json.downloadId;
+        const authToken = json.authToken;
+        if (!downloadId || !authToken) {
+            throw new Error('Error: Connection lost. Please check your Internet connection and reload page.');
+        }
+
+        async function checkStatus() {
+            let isPreparing = true;
+            while (isPreparing) {
+                // check status every second
+                await (() => new Promise(resolve => setTimeout(resolve, 1000)));
+                let downloadStatus = await fetchBulkDownloadStatus(dispatch, downloadId);
+                if (downloadStatus === 'PREPARING') {
+                    continue;
+                } else if (downloadStatus === 'READY') {
+                    isPreparing = false;
+                    // Zip file is ready, show dialog with download link
+                    dispatch({
+                        type: ACTION_UI_DOWNLOAD_SHOW,
+                        payload: {
+                            downloadURL: encodeURI(`${HOST}/resume/bulk/download?downloadId=${downloadId}&authToken=${authToken}`)
+                        }
+                    });
+                } else {
+                    // Failed or expired or unknown status
+                    return;
+                }
+            }
+        }
+
+        checkStatus();
+
     }).catch(error => {
         console.log(error.message);
+        dispatch({
+            type: ACTION_UI_ERROR_SHOW,
+            payload: {
+                message: 'Error: Connection lost. Please check your Internet connection and reload page.'
+            }
+        });
+        dispatch({
+            type: ACTION_UI_GLOBAL_LOADER_HIDE
+        });
+    });
+}
+
+function fetchBulkDownloadStatus(dispatch, downloadId) {
+    return fetch(`${HOST}/resume/bulk/status`, {
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'include',
+        headers: new Headers({
+            'Authorization': `Bearer ${window.authService.getUserState().token}`,
+            'Content-Type': 'application/json'
+        }),
+        body: JSON.stringify({
+            downloadId
+        })
+    }).then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Error: Failed to retrieve bulk download status.');
+    }).then(json => {
+        const zipStatus = json.zipStatus;
+        if (zipStatus === 'PREPARING') {
+            return 'PREPARING';
+        } else if (zipStatus === 'READY') {
+            dispatch({
+                type: ACTION_UI_GLOBAL_LOADER_HIDE
+            });
+            return 'READY';
+        } else if (zipStatus === 'FAILED') {
+            dispatch({
+                type: ACTION_UI_GLOBAL_LOADER_HIDE
+            });
+            dispatch({
+                type: ACTION_UI_ERROR_SHOW,
+                payload: {
+                    message: 'Error: Server failed to prepare the file at this time. Please try again later.'
+                }
+            });
+            return 'FAILED';
+        } else if (zipStatus === 'EXPIRED') {
+            console.error('Bulk download file expired unexpectedly.');
+            dispatch({
+                type: ACTION_UI_GLOBAL_LOADER_HIDE
+            });
+            dispatch({
+                type: ACTION_UI_ERROR_SHOW,
+                payload: {
+                    message: 'Failed to download at this time. Please try again later.'
+                }
+            });
+            return 'EXPIRED';
+        } else {
+            console.error(`Server responds with unexpected zipStatus: ${zipStatus}`);
+            dispatch({
+                type: ACTION_UI_GLOBAL_LOADER_HIDE
+            });
+            dispatch({
+                type: ACTION_UI_ERROR_SHOW,
+                payload: {
+                    message: 'Failed to download at this time. Please try again later.'
+                }
+            });
+            return 'UNKNOWN';
+        }
+    }).catch(error => {
+        console.log(error.message);
+        dispatch({
+            type: ACTION_UI_ERROR_SHOW,
+            payload: {
+                message: 'Error: Connection lost. Please check your Internet connection and reload page.'
+            }
+        });
+        dispatch({
+            type: ACTION_UI_GLOBAL_LOADER_HIDE
+        });
     });
 }
 

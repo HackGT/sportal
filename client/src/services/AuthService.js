@@ -33,12 +33,13 @@ class AuthService {
                 }
             })
         }).catch((error) => {
+            console.log(error.message);
             this.store.dispatch({
                 type: ACTION_UI_ERROR_SHOW,
                 payload: {
-                    message: error.message,
+                    message: 'Error: Connection lost. Please check your Internet connection and reload page.'
                 }
-            })
+            });
         });
     }
 
@@ -100,12 +101,13 @@ class AuthService {
             }
         })
         .catch((error) => {
+            console.log(error.message);
             this.store.dispatch({
                 type: ACTION_UI_ERROR_SHOW,
                 payload: {
-                    message: error.message
+                    message: 'Error: Connection lost. Please check your Internet connection and reload page.'
                 }
-            })
+            });
         });
     }
 
