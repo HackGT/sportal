@@ -365,7 +365,7 @@ export function bulkDownload({all=false, star=false, nfc=false, participants=nul
             promise = loadParticipantsWithNFC();
         } else if (participants) {
             // download for selected participants
-            bulkDownloadWithIDs(participants.map(participant => participant.resumeId));
+            bulkDownloadWithIDs(dispatch, participants.map(participant => participant.resumeId));
         } else {
             console.error('Invalid argument for bulkdownload.')
         }
