@@ -396,7 +396,7 @@ export function bulkDownload({all=false, star=false, nfc=false, participants=nul
 
 function bulkDownloadWithIDs(dispatch, listOfResumeIDs) {
     return fetch(`${HOST}/resume/bulk/prepare`, {
-        method: 'GET',
+        method: 'POST',
         mode: 'cors',
         credentials: 'include',
         headers: new Headers({
