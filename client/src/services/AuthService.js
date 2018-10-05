@@ -73,7 +73,7 @@ class AuthService {
             if (response.status === 403 || response.status === 401) {
                 throw new Error('Error: Invalid Credentials.');
             }
-            throw new Error('Error: Connection lost. Please check your Internet connection and reload page.');
+            throw new Error('Error: Failed to login, check your credentials or Internet connection.');
         })
         .then(json => {
             if (!json.jwt) {
@@ -105,7 +105,7 @@ class AuthService {
             this.store.dispatch({
                 type: ACTION_UI_ERROR_SHOW,
                 payload: {
-                    message: 'Error: Connection lost. Please check your Internet connection and reload page.'
+                    message: 'Error: Failed to login, check your credentials or Internet connection.'
                 }
             });
         });

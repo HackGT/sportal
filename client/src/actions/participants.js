@@ -383,7 +383,7 @@ export function bulkDownload({all=false, star=false, nfc=false, participants=nul
                 dispatch({
                     type: ACTION_UI_ERROR_SHOW,
                     payload: {
-                        message: 'Error: Connection lost. Please check your Internet connection and reload page.'
+                        message: 'Failed to download. Please check your Internet connection and try again.'
                     }
                 });
                 dispatch({
@@ -444,7 +444,7 @@ function bulkDownloadWithIDs(dispatch, listOfResumeIDs) {
         dispatch({
             type: ACTION_UI_ERROR_SHOW,
             payload: {
-                message: 'Error: Connection lost. Please check your Internet connection and reload page.'
+                message: 'Failed to download. Please check your Internet connection and try again.'
             }
         });
         dispatch({
@@ -520,7 +520,7 @@ function fetchBulkDownloadStatus(dispatch, downloadId) {
         dispatch({
             type: ACTION_UI_ERROR_SHOW,
             payload: {
-                message: 'Error: Connection lost. Please check your Internet connection and reload page.'
+                message: 'Failed to download. Please check your Internet connection and try again.'
             }
         });
         dispatch({
