@@ -31,9 +31,14 @@ function setZipSuccess(logger: Logger, req: Request, tempId: string) {
     logger.info("Resume Zip Ready, ID: " + tempId);
 }
 
-function setZipFail(logger: Logger, req: Request, tempId: string, err: archiver.ArchiverError) {
-    ((req.app.get("zipStateMap") as Map<string, ZipState>).get(tempId) as ZipState).status = ZipStatus.FAILED;
-    logger.warn("Resume Zip Failed, ID: " + tempId + ", Error: " +  String(err));
+function setZipFail(logger: Logger, zipStateMap: Map<string, ZipState>, tempId: string, err: archiver.ArchiverError) {
+    const zipState = zipStateMap.get(tempId);
+    if (!zipState) {
+        logger.warn("Unable to set failed status, ID: " + tempId + ", Error: " +  String(err));
+    } else {
+        zipState.status = ZipStatus.FAILED;
+        logger.warn("Resume Zip Failed, ID: " + tempId + ", Error: " +  String(err));
+    }
 }
 
 router.post("/", async (req, res, next) => {
@@ -46,7 +51,11 @@ router.post("/", async (req, res, next) => {
     }
     const now = Date.now();
     // Check if the user is exceeding the rate limit
-    if (now < ((req.app.get("lastDownloadMap") as Map<string, LastDownload>).get(req.id as string) as LastDownload).lastDownloaded + req.app.get("config").bulkDownloadLimit) {
+    let userLastDownloaded = (req.app.get("lastDownloadMap") as Map<string, LastDownload>).get(req.id as string) as LastDownload;
+    if (!userLastDownloaded) {
+        userLastDownloaded = new LastDownload(now);
+        (req.app.get("lastDownloadMap") as Map<string, LastDownload>).set(req.id as string, userLastDownloaded);
+    } else if (now < (userLastDownloaded.lastDownloaded + req.app.get("config").bulkDownloadLimit)) {
         req.routed = true;
         res.status(ResponseCodes.ERROR_TOO_MANY_REQUESTS);
         next(new Error("Too many bulk download requests, please try again in a few minutes!"));
@@ -77,7 +86,7 @@ router.post("/", async (req, res, next) => {
             setZipSuccess(logger, req, tempId);
         });
         archive.on("error", (err) => {
-            setZipFail(logger, req, tempId, err);
+            setZipFail(logger, req.app.get("zipStateMap"), tempId, err);
         });
         archive.finalize();
 

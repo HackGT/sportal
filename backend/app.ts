@@ -18,6 +18,8 @@ const app: express.Application = express();
 // Express configuration
 const config = loadConfig();
 app.set("config", config);
+// Disable cache
+app.disable("etag");
 // Load Resume State
 app.set("zipStateMap", new Map<string, ZipState>());
 // Create Resume Zip Directory
@@ -32,7 +34,7 @@ app.use(compression());
 app.use(express.json({limit: "200kb"}));
 
 // AWS Configuration
-AWS.config.update({accessKeyId: app.get("config").awsAccessKeyId, secretAccessKey: app.get("config").awsSecretAccessKey});
+AWS.config.update({accessKeyId: app.get("config").awsAccessKeyId, secretAccessKey: app.get("config").awsSecretAccessKey, correctClockSkew: true});
 
 // Setup console logging
 const logger: Logger = getLogger();
@@ -67,7 +69,7 @@ app.use((req, res, next) => {
 /**
  * Serve static react client
  */
-app.use(express.static(join(__dirname, "../client/build/")));
+app.use(express.static(join(__dirname, "../../client/build/")));
 
 /**
  * 404 Redirect to react client
@@ -77,6 +79,5 @@ app.use((req, res) => {
     res.status(ResponseCodes.FOUND);
     res.redirect("/");
 });
-
 
 export default app;

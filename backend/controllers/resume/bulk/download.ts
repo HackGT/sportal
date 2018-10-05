@@ -12,7 +12,7 @@ interface IBulkDownloadRequest {
 export const router = Router();
 
 router.get("/", (req, res, next) => {
-    const request = req.params as IBulkDownloadRequest;
+    const request = req.query as IBulkDownloadRequest;
     if (!request || !request.downloadId || !request.authToken) {
         req.routed = true;
         res.status(ResponseCodes.ERROR_BAD_REQUEST);
