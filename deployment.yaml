@@ -1,0 +1,22 @@
+git:
+    branch: master
+
+wants:
+    postgres: true
+
+secrets:
+  - SERVER_ADMIN_API_KEY
+  - AUTH_SECRET
+  - AWS_ACCESS_KEY_ID
+  - AWS_SECRET_ACCESS_KEY
+  - AWS_RESUME_BUCKET
+
+env:
+  SERVER_ENV: "production"
+  SERVER_PORT: "3000"
+  AUTH_EXP: "15m"
+  AWS_SIGNED_URL_EXPIRES: "60"
+  ZIP_EXPIRES: "600000"
+  ZIP_DIRECTORY: "/build/zips"
+  ZIP_DIRECTORY_CLEANUP_INTERVAL: "1800000"
+  BULK_DOWNLOAD_LIMIT: "1000"
