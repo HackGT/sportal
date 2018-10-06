@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {compare} from "bcrypt";
+import {compare} from "bcryptjs";
 
 import {IUser, getUserProfile} from "../../models/user/userModel";
 import {createToken} from "../../models/util/jwt/tokenModel";
