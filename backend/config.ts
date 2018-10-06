@@ -9,12 +9,12 @@ class Config {
     public authSecret: string = process.env.AUTH_SECRET as string || "devTestSecret";
 
     // Database Config
-    public databaseConnectionString: string = process.env.DB_CONNECTION_STRING as string;
+    public databaseConnectionString: string = process.env.POSTGRES_URL as string;
 
     // AWS SDK
     public awsAccessKeyId: string = process.env.AWS_ACCESS_KEY_ID as string;
     public awsSecretAccessKey: string = process.env.AWS_SECRET_ACCESS_KEY as string;
-    public awsSignedUrlExpires: number = Number(process.env.AWS_SIGNED_URL_EXPIRES) || 60;
+    public awsSignedUrlExpires: number = parseInt(process.env.AWS_SIGNED_URL_EXPIRES, 10) || 60;
     public awsResumeBucket: string = process.env.AWS_RESUME_BUCKET as string;
 
     // Resume Zipping
