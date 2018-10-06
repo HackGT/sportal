@@ -9,7 +9,7 @@ class Config {
     public authSecret: string = process.env.AUTH_SECRET as string || "devTestSecret";
 
     // Database Config
-    public databaseConnectionString: string = process.env.DB_CONNECTION_STRING as string;
+    public databaseConnectionString: string = process.env.POSTGRES_URL as string;
 
     // AWS SDK
     public awsAccessKeyId: string = process.env.AWS_ACCESS_KEY_ID as string;
