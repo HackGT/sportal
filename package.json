@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "Sponsorship Portal suite for HackGT",
   "scripts": {
-    "lint-backend": "tslint --project ./backend",
-    "lint-frontend": "tslint --project ./frontend",
+    "lint": "tslint --project ./backend && tslint --project ./client",
     "build-client": "cd ./client && npm run build",
     "build-server": "cd ./backend && npm run build",
     "build": "npm run build-client && npm run build-server",
