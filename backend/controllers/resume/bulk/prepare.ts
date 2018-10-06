@@ -80,12 +80,19 @@ router.post("/", async (req, res, next) => {
         resumeFile.once("open", function() {
             archive.pipe(resumeFile);
         });
-        resumeFile.on("error", setZipFail.bind(null, next));
-        archive.on("finish", () => {
+        resumeFile.on("finish", () => {
+            archive.end();
             resumeFile.end();
             setZipSuccess(logger, req, tempId);
         });
+        resumeFile.on("error", (err) => {
+            archive.end();
+            resumeFile.end();
+            setZipFail(logger, req.app.get("zipStateMap"), tempId, err);
+        });
         archive.on("error", (err) => {
+            archive.end();
+            resumeFile.end();
             setZipFail(logger, req.app.get("zipStateMap"), tempId, err);
         });
         archive.finalize();
