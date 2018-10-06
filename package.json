@@ -1,0 +1,23 @@
+{
+  "name": "sportal",
+  "version": "1.0.0",
+  "description": "Sponsorship Portal suite for HackGT",
+  "scripts": {
+    "lint": "tslint --project ./backend && tslint --project ./client",
+    "build-client": "cd ./client && npm run build",
+    "build-server": "cd ./backend && npm run build",
+    "build": "npm run build-client && npm run build-server",
+    "start": "node ./backend/build/server.js",
+    "build-start": "npm run build && npm run start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HackGT/Sportal.git"
+  },
+  "author": "HackGT",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HackGT/Sportal/issues"
+  },
+  "homepage": "https://github.com/HackGT/Sportal#readme"
+}
