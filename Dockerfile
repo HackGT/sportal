@@ -1,4 +1,4 @@
-FROM node:8
+FROM node:10-alpine
 WORKDIR /usr/src/sportal
 COPY . /usr/src/sportal
 # Backend includes platform specific libraries 
