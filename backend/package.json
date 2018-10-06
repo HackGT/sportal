@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "tslint",
     "build": "tsc",
-    "dev": "tsc & node ./build/server.js",
+    "start": "tsc & node ./build/server.js",
     "test": "tsc & jest"
   },
   "repository": {
