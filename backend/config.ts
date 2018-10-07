@@ -1,3 +1,5 @@
+import * as uuid from "uuid/v4";
+
 class Config {
     // Server Config
     public serverEnv: string = process.env.SERVER_ENV as string || "development";
@@ -16,22 +18,27 @@ class Config {
     public awsSecretAccessKey: string = process.env.AWS_SECRET_ACCESS_KEY as string;
     public awsSignedUrlExpires: number = parseInt(process.env.AWS_SIGNED_URL_EXPIRES as string, 10) || 60;
     public awsResumeBucket: string = process.env.AWS_RESUME_BUCKET as string;
+    public awsRegion: string = process.env.AWS_REGION as string;
 
     // Resume Zipping
     public zlibCompressionLevel: number = 1;
-    public zipExpires: number = parseInt(process.env.ZIP_EXPIRES as string, 10) || 10 * 60 * 1000 // 10m
-    public zipDirectory: string = process.env.ZIP_DIRECTORY as string || "/build/zips"
-    public zipDirectoryCleanupInterval: number = parseInt(process.env.ZIP_DIRECTORY_CLEANUP_INTERVAL as string, 10) || 30 * 60 * 1000 // 30m
+    public zipExpires: number = parseInt(process.env.ZIP_EXPIRES as string, 10) || 55 * 60 * 1000; // 55m
+    public zipUUIDNamespace: string = uuid();
 
     // Bulk Download
-    public bulkDownloadLimit: number = parseInt(process.env.BULK_DOWNLOAD_LIMIT as string, 10) || 60 * 1000 // Once per minute
+    public bulkDownloadLimit: number = parseInt(process.env.BULK_DOWNLOAD_LIMIT as string, 10) || 1000; // Once per second
 
     // Required Configurations
     public required: string[] = [
         this.databaseConnectionString,
         this.awsAccessKeyId,
         this.awsSecretAccessKey,
-        this.awsResumeBucket
+        this.awsResumeBucket,
+        this.awsRegion
+    ];
+    public requiredProd: string[] = [
+        this.serverAdminApiKey,
+        this.authSecret,
     ];
 }
 
@@ -40,6 +47,13 @@ export function loadConfig(): Config {
     for (let i = 0; i < config.required.length; i++) {
         if (!config.required[i]) {
             throw new Error("Unable to start server, you seem to be missing some configurations.");
+        }
+    }
+    if (config.serverEnv !== "development") {
+        for (let i = 0; i < config.requiredProd.length; i++) {
+            if (!config.required[i]) {
+                throw new Error("Unable to start server, you seem to be missing some production configurations.");
+            }
         }
     }
     return config;

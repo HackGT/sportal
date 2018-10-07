@@ -9,9 +9,11 @@ interface IBulkStatusRequest {
 
 export class BulkStatusResponse {
     public zipStatus: string;
+    public zipUrl: string;
 
-    constructor(zipStatus: string) {
+    constructor(zipStatus: string, zipUrl: string) {
         this.zipStatus = zipStatus;
+        this.zipUrl = zipUrl;
     }
 }
 
@@ -32,19 +34,22 @@ router.post("/", (req, res, next) => {
         next(new Error("Cannot find zip profile!"));
         return;
     }
-    if (req.id as string !== zipState.creator) {
+    if (!zipState.creators.has(req.id as string)) {
         req.routed = true;
         res.status(ResponseCodes.ERROR_UNAUTHORIZED);
         next(new Error("You cannot access this zip file!"));
         return;
     }
-    let state: string;
+    let status: string;
+    let resumeUrl: string;
     if (Date.now() >= zipState.expires) {
-        state = ZipStatus.EXPIRED;
+        status = ZipStatus.EXPIRED;
+        resumeUrl = "";
     } else {
-        state = zipState.status;
+        status = zipState.status;
+        resumeUrl = zipState.resumeUrl;
     }
-    const response = new BulkStatusResponse(state);
+    const response = new BulkStatusResponse(status, resumeUrl);
     res.status(ResponseCodes.SUCCESS);
     req.returnObject = response;
     req.routed = true;

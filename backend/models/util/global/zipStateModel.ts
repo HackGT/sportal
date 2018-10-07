@@ -8,13 +8,12 @@ export enum ZipStatus {
 export class ZipState {
     status: ZipStatus
     expires: number
-    creator: string
-    authToken: string
+    creators: Set<string>
+    resumeUrl: string
 
-    constructor(status: ZipStatus, expires: number, creator: string, authToken: string) {
+    constructor(status: ZipStatus, expires: number, creators: Set<string>) {
         this.status = status;
         this.expires = expires;
-        this.creator = creator;
-        this.authToken = authToken;
+        this.creators = creators;
     }
 }

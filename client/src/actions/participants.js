@@ -413,8 +413,7 @@ function bulkDownloadWithIDs(dispatch, listOfResumeIDs) {
         throw new Error('Error: Connection lost. Please check your Internet connection and reload page.');
     }).then(json => {
         const downloadId = json.downloadId;
-        const authToken = json.authToken;
-        if (!downloadId || !authToken) {
+        if (!downloadId) {
             throw new Error('Error: Connection lost. Please check your Internet connection and reload page.');
         }
 
@@ -422,14 +421,14 @@ function bulkDownloadWithIDs(dispatch, listOfResumeIDs) {
 
         async function checkStatus() {
             let downloadStatus = await fetchBulkDownloadStatus(dispatch, downloadId);
-            if (downloadStatus === 'PREPARING') {
+            if (downloadStatus.zipStatus === 'PREPARING') {
                 return;
-            } else if (downloadStatus === 'READY') {
+            } else if (downloadStatus.zipStatus === 'READY') {
                 // Zip file is ready, show dialog with download link
                 dispatch({
                     type: ACTION_UI_DOWNLOAD_SHOW,
                     payload: {
-                        downloadURL: encodeURI(`${HOST}/resume/bulk/download?downloadId=${downloadId}&authToken=${authToken}`)
+                        downloadURL: downloadStatus.zipUrl
                     }
                 });
                 clearInterval(intervalId);
@@ -473,12 +472,12 @@ function fetchBulkDownloadStatus(dispatch, downloadId) {
     }).then(json => {
         const zipStatus = json.zipStatus;
         if (zipStatus === 'PREPARING') {
-            return 'PREPARING';
+            return json;
         } else if (zipStatus === 'READY') {
             dispatch({
                 type: ACTION_UI_GLOBAL_LOADER_HIDE
             });
-            return 'READY';
+            return json;
         } else if (zipStatus === 'FAILED') {
             dispatch({
                 type: ACTION_UI_GLOBAL_LOADER_HIDE
@@ -489,7 +488,7 @@ function fetchBulkDownloadStatus(dispatch, downloadId) {
                     message: 'Error: Server failed to prepare the file at this time. Please try again later.'
                 }
             });
-            return 'FAILED';
+            return json;
         } else if (zipStatus === 'EXPIRED') {
             console.error('Bulk download file expired unexpectedly.');
             dispatch({
@@ -501,7 +500,7 @@ function fetchBulkDownloadStatus(dispatch, downloadId) {
                     message: 'Failed to download at this time. Please try again later.'
                 }
             });
-            return 'EXPIRED';
+            return json;
         } else {
             console.error(`Server responds with unexpected zipStatus: ${zipStatus}`);
             dispatch({
