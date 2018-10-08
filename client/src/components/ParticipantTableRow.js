@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Button, Label, Icon } from 'semantic-ui-react';
+import { Table, Button, Icon, Popup } from 'semantic-ui-react';
 
 class ParticipantTableRow extends React.Component {
     render() {
@@ -12,29 +12,50 @@ class ParticipantTableRow extends React.Component {
         return (
             <Table.Row>
                 <Table.Cell>
-                    { isSelected ? <Label ribbon>Viewing</Label> : null }
-                    
+                    {isSelected ? <b>{ participant.name }</b> : participant.name}
                 </Table.Cell>
-                <Table.Cell>
-                    { participant.name }
-                </Table.Cell>
-                <Table.Cell>
+                {/* <Table.Cell>
                     <a href={`mailto:${participant.email}`}>{ participant.email }</a>
+                </Table.Cell> */}
+                <Table.Cell>
+                    { participant.major }
                 </Table.Cell>
                 <Table.Cell>
-                    <Button
-                        basic
-                        onClick={() => {
-                            onSelect();
-                        }}
-                    >
-                        <Icon name="eye" />Resume/CV
-                    </Button>
+                    <Button.Group>
+                        <Popup
+                            trigger={
+                                <Button
+                                    onClick={() => {
+                                        onSelect();
+                                    }}
+                                >
+                                    <Icon name="eye" /> Resume
+                                </Button>
+                            }
+                            content={participant.employmentQuestionAnswer}
+                        />
+                        
+                        {
+                            participant.githubURL && participant.githubURL !== '' ? (
+                                <Button
+                                    icon
+                                    basic
+                                >
+                                    <a href={participant.githubURL} target="_blank"><Icon name="github" /></a>
+                                </Button>
+                            ) : null
+                        }
+                        {
+                            participant.branch && participant.branch.toUpperCase() === 'MENTOR' ? (
+                                <Popup trigger={<Button basic icon="graduation" />} content="This person is a mentor at the event!" />
+                            ) : null
+                        }
+                    </Button.Group>
                 </Table.Cell>
                 <Table.Cell>
                     <Button.Group>
                         {
-                            participant.hasStar ? <Button basic onClick={onStar}><Icon name="star" color="yellow" /></Button> : <Button basic onClick={onStar}><Icon name="star outline" /></Button>
+                            participant.hasStar ? <Button icon basic onClick={onStar}><Icon name="star" color="yellow" /></Button> : <Button icon basic onClick={onStar}><Icon name="star outline" /></Button>
                         }
                         <Button basic icon="download" onClick={onDownload}/>
                     </Button.Group>

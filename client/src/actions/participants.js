@@ -90,12 +90,40 @@ function transformParticipantsObjects(listOfParticipantsObjects) {
         const hasStar = obj.tags.includes('star');
         const hasNFC = obj.tags.includes('nfc');
 
+        // Major related
+        const majorQuestion = obj.questions.filter(q => q.name==='major')[0];
+        let major = 'Unknown';
+        if (majorQuestion && majorQuestion.value) {
+            major = majorQuestion.value;
+        }
+
+        // Branch related ("default", "mentor", etc.)
+        const branch = obj.branch || 'default';
+
+        // Employment Preference Question
+        const employmentQuestion = obj.questions.filter(q => q.name==='employment')[0];
+        let employmentQuestionAnswer = 'Employment preference unknown';
+        if (employmentQuestion && employmentQuestion.value) {
+            employmentQuestionAnswer = employmentQuestion.value;
+        }
+
+        // Optional Github question
+        const githubQuestion = obj.questions.filter(q => q.name==='github')[0];
+        let githubURL = '';
+        if (githubQuestion && githubQuestion.value) {
+            githubURL = githubQuestion.value;
+        }
+
         return Object.assign({}, obj, {
             resumePath,
             resumeType,
             resumeId,
             hasStar,
-            hasNFC
+            hasNFC,
+            major,
+            branch,
+            employmentQuestionAnswer,
+            githubURL,
         });
     });
 }
