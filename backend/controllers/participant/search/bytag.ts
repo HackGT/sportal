@@ -26,7 +26,7 @@ router.post("/", async (req, res, next) => {
         return;
     }
     try {
-        const participants = await searchByTag(req.app.get("config").databaseConnectionString, req.id as string, searchBody.tag);
+        const participants = await searchByTag(req.app.get("dbConnection"), req.id as string, searchBody.tag);
         const response: SearchByTagResponse = new SearchByTagResponse(participants);
         res.status(ResponseCodes.SUCCESS);
         req.routed = true;

@@ -11,6 +11,7 @@ interface IAddUserRequest {
     email: string;
     password: string;
     apiKey: string;
+    sponsorName: string
 }
 
 const router = Router();
@@ -27,7 +28,7 @@ router.put('/', async (req, res, next) => {
     }
     if (addUserRequest.apiKey === req.app.get("config").serverAdminApiKey) {
         try {
-            await addUser(req.app.get("config").databaseConnectionString, addUserRequest.email, addUserRequest.password);
+            await addUser(req.app.get("dbConnection"), addUserRequest.email, addUserRequest.password, addUserRequest.sponsorName);
             res.status(ResponseCodes.SUCCESS);
             req.routed = true;
             next();

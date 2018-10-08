@@ -23,7 +23,7 @@ router.post("/", async (req, res, next) => {
         return;
     }
     try {
-        const tags = await untagParticipant(req.app.get("config").databaseConnectionString, req.id as string, searchBody.registration_id, searchBody.tag);
+        const tags = await untagParticipant(req.app.get("dbConnection"), req.id as string, searchBody.registration_id, searchBody.tag);
         res.status(ResponseCodes.SUCCESS);
         req.routed = true;
         req.returnObject = tags as UntagResponse;

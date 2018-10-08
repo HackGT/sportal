@@ -33,7 +33,7 @@ router.post("/", async (req, res, next) => {
     }
     try {
         // SQL query for full text and by user name and email
-        const participants = await searchToken(req.app.get("config").databaseConnectionString, req.id as string, searchBody.search);
+        const participants = await searchToken(req.app.get("dbConnection"), req.id as string, searchBody.search);
         const response: SearchResponse = new SearchResponse(participants);
         res.status(ResponseCodes.SUCCESS);
         req.routed = true;
