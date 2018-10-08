@@ -8,6 +8,7 @@ class Navbar extends React.Component {
         // Though it does not seem to require rerendering for every state change,
         // but in the future we might add more functionalities that require so.
         const state = this.props.state;
+        const logo_url = this.props.state.user.logo_url;
         const actionLogout = this.props.actionLogout;
         const logoutButton = (!state.user.isLoggedIn) ? false : (
             <Button
@@ -19,15 +20,17 @@ class Navbar extends React.Component {
         );
 
         return (
-            // <div style={{ width: '100vw', height: '80px', background: '#ffffff', paddingTop: '10px', borderBottom: '1px solid grey' }}>
-                
-            // </div>
             <Segment raised>
                 <Menu secondary>
                     <Menu.Item>
                         <Header as='h1'>{ TITLE }</Header>
                     </Menu.Item>
                     <Menu.Menu position="right">
+                        {
+                            logo_url && logo_url !== '' ? (
+                                <img src={logo_url} style={{ height: '54px', width: 'auto' }} alt="" />
+                            ) : null
+                        }
                         <Menu.Item>
                             { logoutButton }
                         </Menu.Item>

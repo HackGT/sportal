@@ -39,7 +39,9 @@ const initialState = {
     user: {
         isLoggedIn: false,
         username: '',
-        token: ''
+        token: '',
+        sponsor_name: '',
+        logo_url: ''
     },
     participants: {
         isLoading: false,
@@ -146,13 +148,17 @@ const user = (state = initialState.user, action) => {
             return Object.assign({}, state, {
                 isLoggedIn: true,
                 username: action.payload.username,
-                token: action.payload.token
+                token: action.payload.token,
+                sponsor_name: action.payload.sponsor_name || '',
+                logo_url: action.payload.logo_url || ''
             });
         case ACTION_USER_LOGOUT:
             return Object.assign({}, state, {
                 isLoggedIn: false,
                 username: '',
-                token: ''
+                token: '',
+                sponsor_name: '',
+                logo_url: ''
             });
         case ACTION_USER_RENEW_TOKEN:
             return Object.assign({}, state, {

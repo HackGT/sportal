@@ -25,6 +25,9 @@ window.authService = authService;
 // If valid JWT exists, log in the user directly
 const token = window.localStorage.getItem('token');
 const username = window.localStorage.getItem('username');
+const sponsor_name = window.localStorage.getItem('sponsor_name');
+const logo_url = window.localStorage.getItem('logo_url');
+
 if (token && username && token !== '') {
     // Has JWT expired?
     const currentTime = Date.now().valueOf() / 1000;
@@ -35,7 +38,9 @@ if (token && username && token !== '') {
             type: ACTION_USER_LOGIN,
             payload: {
                 username,
-                token
+                token,
+                sponsor_name,
+                logo_url
             }
         });
 

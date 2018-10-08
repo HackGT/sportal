@@ -20,7 +20,9 @@ DebugHelper.login = () => {
         type: ACTION_USER_LOGIN,
         payload: {
             username: 'Debug Session',
-            token: ''
+            token: '',
+            sponsor_name: 'Test Company',
+            logo_url: 'https://hack.gt/assets/hackgt.svg'
         }
     })
 }
