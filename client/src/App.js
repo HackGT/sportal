@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Dimmer, Loader, Modal, Header, Icon, Button } from 'semantic-ui-react';
+import { Dimmer, Loader, Modal, Header, Icon } from 'semantic-ui-react';
 import ConnectedNavbar from './containers/Navbar';
 import ConnectedMainPage from './containers/MainPage';
 import ConnectedLoginPage from './containers/LoginPage';
-import { ACTION_UI_ERROR_HIDE, ACTION_UI_DOWNLOAD_HIDE } from './constants/actions';
+import { ACTION_UI_ERROR_HIDE } from './constants/actions';
+import ConnectedBulkDownloadModal from './containers/BulkDownloadModal';
 
 class App extends Component {
   render() {
@@ -21,25 +22,7 @@ class App extends Component {
             <h3>{this.props.errorModalMessage}</h3>
           </Modal.Content>
         </Modal>
-        <Modal
-          open={this.props.isDownloadModalActive}
-          onClose={() => this.props.hideDownload()}
-          size="small"
-        >
-          <Header icon="browser" content="Download" />
-          <Modal.Content>
-            Your file has been prepared. Click the button below to begin download.
-          </Modal.Content>
-          <Modal.Actions>
-            <a href={this.props.downloadURL} target="_blank">
-              <Button
-                primary
-              >
-                Download
-              </Button>
-            </a>
-          </Modal.Actions>
-        </Modal>
+        <ConnectedBulkDownloadModal />
         <ConnectedNavbar />
         <div>
           <Dimmer active={this.props.isGlobalLoaderActive} inverted>
@@ -63,8 +46,6 @@ const mapStateToProps = (state) => {
       isLoggedIn: state.user.isLoggedIn,
       isErrorModalActive: state.ui.isErrorModalActive,
       errorModalMessage: state.ui.errorModalMessage,
-      isDownloadModalActive: state.ui.isDownloadModalActive,
-      downloadURL: state.ui.downloadURL
   };
 };
 
@@ -73,11 +54,6 @@ const mapDispatchToProps = (dispatch) => {
     hideError: () => {
       dispatch({
         type: ACTION_UI_ERROR_HIDE
-      });
-    },
-    hideDownload: () => {
-      dispatch({
-        type: ACTION_UI_DOWNLOAD_HIDE
       });
     }
   };

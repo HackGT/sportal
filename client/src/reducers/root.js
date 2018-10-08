@@ -17,7 +17,9 @@ import {
     ACTION_UI_CHANGE_VIEW_MODE,
     ACTION_PARTICIPANTS_CHANGE_PAGE,
     ACTION_UI_DOWNLOAD_HIDE,
-    ACTION_UI_DOWNLOAD_SHOW
+    ACTION_UI_DOWNLOAD_SHOW,
+    ACTION_UI_DOWNLOAD_PREPARE,
+    ACTION_UI_DOWNLOAD_READY
 } from '../constants/actions';
 
 const initialState = {
@@ -31,6 +33,7 @@ const initialState = {
         errorModalMessage: '',
         isDownloadModalActive: false,
         downloadURL: '',
+        downloadState: 'NONE', // 'NONE', 'PREPARING', 'READY'
         isGlobalLoaderActive: false,
     },
     user: {
@@ -82,11 +85,23 @@ const ui = (state = initialState.ui, action) => {
         case ACTION_UI_DOWNLOAD_SHOW:
             return Object.assign({}, state, {
                 isDownloadModalActive: true,
-                downloadURL: action.payload.downloadURL,
+                downloadState: 'NONE',
+                downloadURL: '',
+            });
+        case ACTION_UI_DOWNLOAD_PREPARE:
+            return Object.assign({}, state, {
+                downloadState: 'PREPARING'
+            });
+        case ACTION_UI_DOWNLOAD_READY:
+            return Object.assign({}, state, {
+                downloadState: 'READY',
+                downloadURL: action.payload.downloadURL
             });
         case ACTION_UI_DOWNLOAD_HIDE:
             return Object.assign({}, state, {
                 isDownloadModalActive: false,
+                downloadState: 'NONE',
+                downloadURL: '',
             });
         default:
             return state;

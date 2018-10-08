@@ -10,7 +10,9 @@ import {
     ACTION_PARTICIPANTS_STAR_ADD,
     ACTION_PARTICIPANTS_STAR_REMOVE,
     ACTION_PARTICIPANTS_CHANGE_PAGE,
-    ACTION_UI_DOWNLOAD_SHOW
+    ACTION_UI_DOWNLOAD_PREPARE,
+    ACTION_UI_DOWNLOAD_HIDE,
+    ACTION_UI_DOWNLOAD_READY
 } from "../constants/actions";
 import { HOST } from "../constants/configs";
 
@@ -352,7 +354,7 @@ export function downloadParticipantResume(participant) {
 export function bulkDownload({all=false, star=false, nfc=false, participants=null}) {
     return dispatch => {
         dispatch({
-            type: ACTION_UI_GLOBAL_LOADER_SHOW
+            type: ACTION_UI_DOWNLOAD_PREPARE,
         });
 
         let promise = null;
@@ -387,7 +389,7 @@ export function bulkDownload({all=false, star=false, nfc=false, participants=nul
                     }
                 });
                 dispatch({
-                    type: ACTION_UI_GLOBAL_LOADER_HIDE
+                    type: ACTION_UI_DOWNLOAD_HIDE
                 });
             })
         }
@@ -426,7 +428,7 @@ function bulkDownloadWithIDs(dispatch, listOfResumeIDs) {
             } else if (downloadStatus.zipStatus === 'READY') {
                 // Zip file is ready, show dialog with download link
                 dispatch({
-                    type: ACTION_UI_DOWNLOAD_SHOW,
+                    type: ACTION_UI_DOWNLOAD_READY,
                     payload: {
                         downloadURL: downloadStatus.zipUrl
                     }
@@ -447,7 +449,7 @@ function bulkDownloadWithIDs(dispatch, listOfResumeIDs) {
             }
         });
         dispatch({
-            type: ACTION_UI_GLOBAL_LOADER_HIDE
+            type: ACTION_UI_DOWNLOAD_HIDE
         });
     });
 }
@@ -474,13 +476,10 @@ function fetchBulkDownloadStatus(dispatch, downloadId) {
         if (zipStatus === 'PREPARING') {
             return json;
         } else if (zipStatus === 'READY') {
-            dispatch({
-                type: ACTION_UI_GLOBAL_LOADER_HIDE
-            });
             return json;
         } else if (zipStatus === 'FAILED') {
             dispatch({
-                type: ACTION_UI_GLOBAL_LOADER_HIDE
+                type: ACTION_UI_DOWNLOAD_HIDE
             });
             dispatch({
                 type: ACTION_UI_ERROR_SHOW,
@@ -492,7 +491,7 @@ function fetchBulkDownloadStatus(dispatch, downloadId) {
         } else if (zipStatus === 'EXPIRED') {
             console.error('Bulk download file expired unexpectedly.');
             dispatch({
-                type: ACTION_UI_GLOBAL_LOADER_HIDE
+                type: ACTION_UI_DOWNLOAD_HIDE
             });
             dispatch({
                 type: ACTION_UI_ERROR_SHOW,
@@ -504,7 +503,7 @@ function fetchBulkDownloadStatus(dispatch, downloadId) {
         } else {
             console.error(`Server responds with unexpected zipStatus: ${zipStatus}`);
             dispatch({
-                type: ACTION_UI_GLOBAL_LOADER_HIDE
+                type: ACTION_UI_DOWNLOAD_HIDE
             });
             dispatch({
                 type: ACTION_UI_ERROR_SHOW,
@@ -523,7 +522,7 @@ function fetchBulkDownloadStatus(dispatch, downloadId) {
             }
         });
         dispatch({
-            type: ACTION_UI_GLOBAL_LOADER_HIDE
+            type: ACTION_UI_DOWNLOAD_HIDE
         });
     });
 }
