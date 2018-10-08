@@ -19,23 +19,29 @@ class NFCService {
         this.isConnected = false;
         this.store = store;
         this.url = url;
-        this.socket = new WebSocket(url);
-        this.socket.onopen = () => {
-            console.log("NFCService Websocket connection established.");
-            this.isConnected = true;
-        };
-        this.socket.onmessage = (event) => {
-            console.log(event.data);
-            this.onReceiveID(JSON.parse(event.data)["badgeID"]);
-        };
-        this.socket.onerror = (event) => {
-            console.error("Websocket error observed: ", event);
-            console.log("Websocket connection to the NFC service has failed, disabling the optional NFC service.");
-            this.isConnected = false;
-        };
-        this.socket.onclose = () => {
-            console.log("NFCService Websocket closed.");
-        };
+        try {
+            this.socket = new WebSocket(url);
+            this.socket.onopen = () => {
+                console.log("NFCService Websocket connection established.");
+                this.isConnected = true;
+            };
+            this.socket.onmessage = (event) => {
+                console.log(event.data);
+                this.onReceiveID(JSON.parse(event.data)["badgeID"]);
+            };
+            this.socket.onerror = (event) => {
+                console.error("Websocket error observed: ", event);
+                console.log("Websocket connection to the NFC service has failed, disabling the optional NFC service.");
+                this.isConnected = false;
+            };
+            this.socket.onclose = () => {
+                console.log("NFCService Websocket closed.");
+            };
+        }
+        catch(error) {
+            console.error(error);
+        }
+        
     }
 
     onReceiveID(id) {
