@@ -20,4 +20,5 @@ export const IS_DEV_ENV = process.env.NODE_ENV === 'development';
 export const HOST = (!IS_DEV_ENV) ? (window.location.protocol + '//' + window.location.host + '/api') : 'http://localhost:8080/api';
 // NFC Secure Websocket URL (see NFCService for more info)
 // Must be wss, since firefox does not allow ws with https
-export const NFC_WS_URL = 'wss://localhost:1337/';
+// Since the websocket server does not support wss yet, use ws for now
+export const NFC_WS_URL = 'ws://localhost:1337/';
