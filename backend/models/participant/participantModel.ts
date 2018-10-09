@@ -109,5 +109,4 @@ export async function untagParticipant(db: pgp.IDatabase<{}>, user_id: string, r
 export async function setParticipantOptedIn(db: pgp.IDatabase<{}>, registration_id: string, opted_in: boolean) {
     const optedInQuery = "UPDATE participant SET opted_in = $1 WHERE registration_id = $2;";
     const result = await db.query(optedInQuery, [opted_in, registration_id]);
-    return new ReturnedTagObject(result[0].tags);
 }
