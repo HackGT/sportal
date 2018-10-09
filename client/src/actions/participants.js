@@ -211,7 +211,7 @@ export function selectParticipant(participant) {
                 'Content-Type': 'application/json'
             }),
             body: JSON.stringify({
-                resume: participant.resumeId
+                registration_id: participant.id
             })
         })
         .then(response => {
@@ -361,7 +361,7 @@ export function downloadParticipantResume(participant) {
             'Content-Type': 'application/json'
         }),
         body: JSON.stringify({
-            resume: participant.resumeId
+            registration_id: participant.id
         })
     })
     .then(response => {
@@ -407,7 +407,7 @@ export function bulkDownload({all=false, star=false, nfc=false, participants=nul
                 }
                 throw new Error('Error: Connection lost. Please check your Internet connection and reload page.');
             }).then(json => {
-                bulkDownloadWithIDs(dispatch, transformParticipantsObjects(json.participants).map(participant => participant.resumeId));
+                bulkDownloadWithIDs(dispatch, json.participants);
             }).catch(error => {
                 console.log(error.message);
                 dispatch({
@@ -424,7 +424,7 @@ export function bulkDownload({all=false, star=false, nfc=false, participants=nul
     };
 }
 
-function bulkDownloadWithIDs(dispatch, listOfResumeIDs) {
+function bulkDownloadWithIDs(dispatch, listOfParticipantsObjects) {
     return fetch(`${HOST}/resume/bulk/prepare`, {
         method: 'POST',
         mode: 'cors',
@@ -434,7 +434,7 @@ function bulkDownloadWithIDs(dispatch, listOfResumeIDs) {
             'Content-Type': 'application/json'
         }),
         body: JSON.stringify({
-            resumes: listOfResumeIDs
+            registration_ids: listOfParticipantsObjects.map(obj => obj.id),
         })
     }).then(response => {
         if (response.ok) {
