@@ -99,7 +99,7 @@ class MainPage extends Component {
                                     <Button
                                         onClick={() => showDownloadModal()}
                                     >
-                                        Download..
+                                        Bulk Download..
                                     </Button>
                                 </div>
                                 
