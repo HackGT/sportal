@@ -21,36 +21,31 @@ class ParticipantTableRow extends React.Component {
                     { participant.major }
                 </Table.Cell>
                 <Table.Cell>
-                    <Button.Group>
-                        <Popup
-                            trigger={
-                                <Button
-                                    onClick={() => {
-                                        onSelect();
-                                    }}
-                                >
-                                    <Icon name="eye" /> Resume
-                                </Button>
-                            }
-                            content={participant.employmentQuestionAnswer}
-                        />
-                        
-                        {
-                            participant.githubURL && participant.githubURL !== '' ? (
-                                <Button
-                                    icon
-                                    basic
-                                >
-                                    <a href={participant.githubURL} target="_blank"><Icon name="github" /></a>
-                                </Button>
-                            ) : null
+                    <Popup
+                        trigger={
+                            <Button
+                                onClick={() => {
+                                    onSelect();
+                                }}
+                            >
+                                <Icon name="eye" /> Resume
+                            </Button>
                         }
-                        {
-                            participant.branch && participant.branch.toUpperCase() === 'MENTOR' ? (
-                                <Popup trigger={<Button basic icon="graduation" />} content="This person is a mentor at the event!" />
-                            ) : null
-                        }
-                    </Button.Group>
+                        content={participant.employmentQuestionAnswer}
+                    />
+                    
+                    {
+                        participant.githubURL && participant.githubURL !== '' ? (
+                            <a href={participant.githubURL} target="_blank">
+                                <Button basic circular icon="github" />
+                            </a>
+                        ) : null
+                    }
+                    {
+                        participant.branch && participant.branch.toUpperCase() === 'MENTOR' ? (
+                            <Popup trigger={<Button basic circular icon="graduation" />} content="This person is a mentor at the event!" />
+                        ) : null
+                    }
                 </Table.Cell>
                 <Table.Cell>
                     <Button.Group>
