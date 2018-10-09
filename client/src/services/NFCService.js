@@ -72,6 +72,34 @@ class NFCService {
             console.error(error.message);
         });
 
+        // Mark the participant as confirmed/opted-in if not already
+        // (some of the participants did not explicitly agree to expose
+        // their data in Sponsorship Portal before the event, so scanning
+        // their NFC badge will be considered an explicit authorization)
+        fetch(`${HOST}/participant/confirm`, {
+            method: 'POST',
+            mode: 'cors',
+            credentials: 'include',
+            headers: new Headers({
+                'Authorization': `Bearer ${window.authService.getUserState().token}`,
+                'Content-Type': 'application/json'
+            }),
+            body: JSON.stringify({
+                registration_id: id,
+                opt_in: true,
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Successfully confirmed');
+            } else {
+                console.error(`Failed to confirm ${id}`);
+            }
+        })
+        .catch(error => {
+            console.error(error.message);
+        });
+
         this.store.dispatch({
             type: ACTION_UI_SELECT_PARTICIPANT_ID,
             payload: {
