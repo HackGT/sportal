@@ -29,7 +29,7 @@ export class ReturnedTagObject {
 }
 
 export async function getAllParticipants(db: pgp.IDatabase<{}>, user_id: string): Promise<Participant[]> {
-    const getAllQuery = "SELECT tags -> $1 as tags, blob FROM participant;";
+    const getAllQuery = "SELECT tags -> $1 as tags, blob FROM participant WHERE opted_in = true;";
     const result = await db.query(getAllQuery, [user_id]);
     const participants: Participant[] = [];
     for (let i: number = 0; i < result.length; i++) {
@@ -49,7 +49,7 @@ export async function searchToken(db: pgp.IDatabase<{}>, user_id: string, queryS
     const tsquery = tokens.join(' | ');
 
     // perform full-text search
-    const ftsQuery = "SELECT tags -> $1 as tags, blob FROM participant WHERE document @@ to_tsquery($2);";
+    const ftsQuery = "SELECT tags -> $1 as tags, blob FROM participant WHERE document @@ to_tsquery($2) AND opted_in = true;";
     const result = await db.query(ftsQuery, [user_id, tsquery]);
     const participants: Participant[] = [];
     for (let i: number = 0; i < result.length; i++) {
@@ -64,7 +64,7 @@ export async function searchToken(db: pgp.IDatabase<{}>, user_id: string, queryS
 }
 
 export async function searchByIds(db: pgp.IDatabase<{}>, user_id: string, ids: string[]): Promise<Participant[]> {
-    const idQuery = "SELECT tags -> $1 as tags, blob FROM participant WHERE registration_id = $2;";
+    const idQuery = "SELECT tags -> $1 as tags, blob FROM participant WHERE registration_id = $2 AND opted_in = true;";
     const participants: Participant[] = [];
     for (let i: number = 0; i < ids.length; i++) {
         const result = await db.query(idQuery, [user_id, ids[i]]);
@@ -80,7 +80,7 @@ export async function searchByIds(db: pgp.IDatabase<{}>, user_id: string, ids: s
 }
 
 export async function searchByTag(db: pgp.IDatabase<{}>, user_id: string, tag: string): Promise<Participant[]> {
-    const tagQuery = "SELECT tags -> $1 AS tags, blob FROM participant WHERE tags -> $1 ? $2;";
+    const tagQuery = "SELECT tags -> $1 AS tags, blob FROM participant WHERE tags -> $1 ? $2 AND opted_in = true;";
     const result = await db.query(tagQuery, [user_id, tag]);
     const participants: Participant[] = [];
     for (let i: number = 0; i < result.length; i++) {
@@ -103,5 +103,11 @@ export async function tagParticipant(db: pgp.IDatabase<{}>, user_id: string, reg
 export async function untagParticipant(db: pgp.IDatabase<{}>, user_id: string, registration_id: string, tag: string): Promise<ReturnedTagObject> {
     const tagQuery = "UPDATE participant SET tags = jsonb_set(tags, $1, (tags->$2)::jsonb - $3) WHERE registration_id = $4 RETURNING tags -> $2 AS tags;";
     const result = await db.query(tagQuery, ["{" + user_id + "}", user_id, tag, registration_id]);
+    return new ReturnedTagObject(result[0].tags);
+}
+
+export async function setParticipantOptedIn(db: pgp.IDatabase<{}>, registration_id: string, opted_in: boolean) {
+    const optedInQuery = "UPDATE participant SET opted_in = $1 WHERE registration_id = $2;";
+    const result = await db.query(optedInQuery, [opted_in, registration_id]);
     return new ReturnedTagObject(result[0].tags);
 }
