@@ -15,7 +15,7 @@ const router = Router();
 
 router.get('/', async (req, res, next) => {
     try {
-        const participants = await getAllParticipants(req.app.get("dbConnection"), req.id as string);
+        const participants = await getAllParticipants(req.app.get("dbConnection"), req.sponsor as string);
         const getAllResponse = new GetAllResponse(participants);
         res.status(ResponseCodes.SUCCESS);
         req.returnObject = getAllResponse;

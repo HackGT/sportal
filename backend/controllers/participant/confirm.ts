@@ -26,7 +26,9 @@ router.post('/', async (req, res, next) => {
         authorized = true;
     } else {
         try {
-            req.id = verifyJWT(retrieveTokenFromHeader(req), req.app.get("config").authSecret);
+            const payload = verifyJWT(retrieveTokenFromHeader(req), req.app.get("config").authSecret);
+            req.id = payload.id;
+            req.sponsor = payload.sponsor;
             authorized = true;
         } catch (err) {
             authorized = false;

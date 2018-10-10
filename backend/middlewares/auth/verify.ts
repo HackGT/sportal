@@ -7,7 +7,9 @@ import ITokenPayload from "../../models/util/jwt/tokenPayloadInterface";
 export default function verifyRequestAuthenticatedMiddleware(req: Request, res: Response, next: NextFunction) {
     try {
         if (req.method !== "OPTIONS") {
-            req.id = verifyJWT(retrieveTokenFromHeader(req), req.app.get("config").authSecret);
+            const payload = verifyJWT(retrieveTokenFromHeader(req), req.app.get("config").authSecret);
+            req.id = payload.id;
+            req.sponsor = payload.sponsor;
             next(); 
         } else {
             next();
@@ -20,9 +22,9 @@ export default function verifyRequestAuthenticatedMiddleware(req: Request, res: 
 
 }
 
-export function verifyJWT(jwt: string, authSecret: string): string {
+export function verifyJWT(jwt: string, authSecret: string): ITokenPayload {
     const payload = verify(jwt, authSecret);
-    return (payload as ITokenPayload).id;
+    return (payload as ITokenPayload);
 }
 
 export function retrieveTokenFromHeader(req: Request): string {

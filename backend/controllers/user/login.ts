@@ -50,7 +50,7 @@ router.post("/", async (req, res, next) => {
         const validCredentials = await compare(loginRequest.password, profile.password);
         if (validCredentials) {
             const sponsor = await getSponsorProfileByName(req.app.get("dbConnection"), profile.sponsor_name);
-            const loginResponse = new LoginResponse(createToken(loginRequest.email as string,
+            const loginResponse = new LoginResponse(createToken(loginRequest.email as string, profile.sponsor_name,
                 req.app.get("config").authSecret, req.app.get("config").authExp), sponsor.name, sponsor.logo_url);
             res.status(ResponseCodes.SUCCESS);
             req.returnObject = loginResponse;
