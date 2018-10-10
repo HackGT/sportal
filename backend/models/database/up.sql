@@ -7,5 +7,5 @@ CREATE TABLE IF NOT EXISTS users (
     id serial PRIMARY KEY,
     email text UNIQUE NOT NULL,
     password text NOT NULL,
-    sponsor_name text REFERENCES sponsor(name)
+    sponsor_name text REFERENCES sponsor(name) NOT NULL
 );

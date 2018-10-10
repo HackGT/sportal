@@ -21,7 +21,7 @@ router.use("/login", login);
 
 router.put('/', async (req, res, next) => {
     const addUserRequest = req.body as IAddUserRequest;
-    if (!addUserRequest || !addUserRequest.email || !addUserRequest.password || !addUserRequest.apiKey) {
+    if (!addUserRequest || !addUserRequest.email || !addUserRequest.password || !addUserRequest.apiKey || !addUserRequest.sponsorName) {
         res.status(ResponseCodes.ERROR_BAD_REQUEST);
         req.routed = true;
         next(new Error("Request missing user add parameters"));
