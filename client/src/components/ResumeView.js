@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Document, Page } from 'react-pdf';
+import { Icon } from 'semantic-ui-react';
+
 
 class ResumeView extends Component {
     render() {
@@ -11,8 +13,13 @@ class ResumeView extends Component {
         let view = null;
 
         const emptyView = (
-            <div style={{display: "flex", justifyContent: "center", alignContent: "center", textAlign: "center"}}>
-                <b>No participant selected</b>
+            <div style={{width: '100%', height: '100%', display: "flex", justifyContent: "center", alignItems: "center", textAlign: "center"}}>
+                <div style={{fontSize: '200%', height: '20%'}}><b></b></div>
+                <div style={{fontSize: '150%', height: '20%'}}>
+                    <Icon name='file pdf outline' size="big"/>
+                    <div style={{height: '30px'}} />
+                    <b>No participant selected</b>
+                </div>
             </div>
         );
 
@@ -29,8 +36,12 @@ class ResumeView extends Component {
         );
 
         const otherView = (
-            <div style={{display: "flex", justifyContent: "center", alignContent: "center", textAlign: "center"}}>
-                <b>The participant has submitted a resume in neither PDF nor docx. We are unable to display the document.</b>
+            <div style={{width: '100%', height: '100%', display: "flex", justifyContent: "center", alignItems: "center", textAlign: "center"}}>
+                <div style={{fontSize: '150%', height: '20%'}}>
+                    <Icon name='warning circle' size="big"/>
+                    <div style={{height: '30px'}} />
+                    <b>Participant submitted unsupported resume format</b>
+                </div>
             </div>
         );
 
