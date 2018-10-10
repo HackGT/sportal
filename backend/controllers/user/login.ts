@@ -50,6 +50,7 @@ router.post("/", async (req, res, next) => {
         res.status(ResponseCodes.ERROR_UNAUTHORIZED);
         req.routed = true;
         next(new Error("Invalid Credentials"));
+        return;
     }
     try {
         const validCredentials = await compare(loginRequest.password, profile.password);
