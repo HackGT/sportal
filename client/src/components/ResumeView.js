@@ -25,12 +25,12 @@ class ResumeView extends Component {
         );
 
         const docView = (
-            <iframe style={{width: '100%', height: '100%'}} title="word-viewer" src={`http://docs.google.com/gview?url=${selectedParticipantResumeURL}&embedded=true`} />
+            <iframe style={{width: '100%', height: '100%'}} title="word-viewer" src={`https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(selectedParticipantResumeURL)}`} />
         );
 
         const otherView = (
             <div style={{display: "flex", justifyContent: "center", alignContent: "center", textAlign: "center"}}>
-                <b>The participant has submitted a resume in neither PDF nor doc. We are unable to display the document.</b>
+                <b>The participant has submitted a resume in neither PDF nor docx. We are unable to display the document.</b>
             </div>
         );
 
