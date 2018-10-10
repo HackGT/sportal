@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Grid, Dimmer, Loader, Input, Button, Form, Dropdown, Menu, Pagination } from 'semantic-ui-react';
+import { Grid, Dimmer, Loader, Input, Button, Form, Pagination } from 'semantic-ui-react';
 import ParticipantsTable from '../components/ParticipantsTable';
 import ResumeView from '../components/ResumeView';
-import { ACTION_UI_SEARCH_STRING, ACTION_UI_CHANGE_VIEW_MODE } from '../constants/actions';
-import { selectParticipant, starParticipant, unstarParticipant, loadParticipants, bulkDownload, changePage } from '../actions/participants';
+import { ACTION_UI_SEARCH_STRING, ACTION_UI_CHANGE_VIEW_MODE, ACTION_UI_DOWNLOAD_SHOW } from '../constants/actions';
+import { selectParticipant, starParticipant, unstarParticipant, loadParticipants, changePage } from '../actions/participants';
 
 
 class MainPage extends Component {
@@ -28,10 +28,7 @@ class MainPage extends Component {
         const loadStarredParticipants = this.props.loadStarredParticipants;
         const loadVisitedParticipants = this.props.loadVisitedParticipants;
         const loadSearchedParticipants = this.props.loadSearchedParticipants;
-        const downloadAllParticipants = this.props.downloadAllParticipants;
-        const downloadStarredParticipants = this.props.downloadStarredParticipants;
-        const downloadVisitedParticipants = this.props.downloadVisitedParticipants;
-        const downloadCurrentParticipants = this.props.downloadCurrentParticipants;
+        const showDownloadModal = this.props.showDownloadModal;
         
         
         return (
@@ -99,16 +96,11 @@ class MainPage extends Component {
                                     </Button.Group>
                                 </div>
                                 <div>
-                                    <Menu vertical>
-                                        <Dropdown item text="Download">
-                                            <Dropdown.Menu>
-                                                <Dropdown.Item onClick={downloadAllParticipants}>All</Dropdown.Item>
-                                                <Dropdown.Item onClick={downloadStarredParticipants}>Starred</Dropdown.Item>
-                                                <Dropdown.Item onClick={downloadVisitedParticipants}>Visited</Dropdown.Item>
-                                                <Dropdown.Item onClick={() => downloadCurrentParticipants(participants)}>Currently Viewing</Dropdown.Item>
-                                            </Dropdown.Menu>
-                                        </Dropdown>
-                                    </Menu>
+                                    <Button
+                                        onClick={() => showDownloadModal()}
+                                    >
+                                        Bulk Download..
+                                    </Button>
                                 </div>
                                 
                             </div>
@@ -196,17 +188,10 @@ const mapDispatchToProps = (dispatch) => {
                 dispatch(loadParticipants({search: searchTerm}));
             }
         },
-        downloadAllParticipants: () => {
-            dispatch(bulkDownload({all: true}));
-        },
-        downloadStarredParticipants: () => {
-            dispatch(bulkDownload({star: true}));
-        },
-        downloadVisitedParticipants: () => {
-            dispatch(bulkDownload({nfc: true}));
-        },
-        downloadCurrentParticipants: (participants) => {
-            dispatch(bulkDownload({participants: participants}));
+        showDownloadModal: () => {
+            dispatch({
+                type: ACTION_UI_DOWNLOAD_SHOW
+            });
         },
         changePage: (page) => {
             dispatch(changePage(page));

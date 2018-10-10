@@ -31,8 +31,8 @@ router.use(function(req, res, next) {
  * Primary app routes.
  */
 router.use("/user", user);
-router.use("/participant", requireAuth, participant);
-router.use("/resume", resume);
+router.use("/participant", participant);
+router.use("/resume", requireAuth, resume);
 
 /**
  * Final Success Handler

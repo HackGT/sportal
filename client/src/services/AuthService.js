@@ -1,4 +1,4 @@
-import { HOST } from "../constants/configs";
+import { HOST, IS_DEV_ENV } from "../constants/configs";
 import { ACTION_USER_RENEW_TOKEN, ACTION_UI_ERROR_SHOW, ACTION_USER_LOGIN, ACTION_USER_LOGOUT } from "../constants/actions";
 import DebugHelper from "../debug/debug";
 import { loadParticipants } from "../actions/participants";
@@ -51,7 +51,7 @@ class AuthService {
     }
 
     login(username, password) {
-        if (username === 'test' && password === 'test') {
+        if (username === 'test' && password === 'test' && IS_DEV_ENV) {
             DebugHelper.login();
             return;
         }
@@ -88,11 +88,15 @@ class AuthService {
                     type: ACTION_USER_LOGIN,
                     payload: {
                         username: username,
-                        token: json.jwt
+                        token: json.jwt,
+                        sponsor_name: json.sponsor_name,
+                        logo_url: json.logo_url
                     }
                 });
                 window.localStorage.setItem("username", username);
                 window.localStorage.setItem("token", json.jwt);
+                window.localStorage.setItem("sponsor_name", json.sponsor_name);
+                window.localStorage.setItem("logo_url", json.logo_url);
 
                 this.store.dispatch(loadParticipants({}));
 
@@ -117,6 +121,8 @@ class AuthService {
         });
         window.localStorage.removeItem('token');
         window.localStorage.removeItem('username');
+        window.localStorage.removeItem('sponsor_name');
+        window.localStorage.removeItem('logo_url');
     }
 }
 

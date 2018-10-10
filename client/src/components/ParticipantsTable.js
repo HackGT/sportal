@@ -15,9 +15,9 @@ class ParticipantsTable extends React.Component {
             <Table basic selectable>
                 <Table.Header>
                     <Table.Row>
-                        <Table.HeaderCell></Table.HeaderCell>
                         <Table.HeaderCell>Name</Table.HeaderCell>
-                        <Table.HeaderCell>Email</Table.HeaderCell>
+                        {/* <Table.HeaderCell>Email</Table.HeaderCell> */}
+                        <Table.HeaderCell>Major</Table.HeaderCell>
                         <Table.HeaderCell>Info</Table.HeaderCell>
                         <Table.HeaderCell>Actions</Table.HeaderCell>
                     </Table.Row>

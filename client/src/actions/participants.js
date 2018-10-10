@@ -10,7 +10,9 @@ import {
     ACTION_PARTICIPANTS_STAR_ADD,
     ACTION_PARTICIPANTS_STAR_REMOVE,
     ACTION_PARTICIPANTS_CHANGE_PAGE,
-    ACTION_UI_DOWNLOAD_SHOW
+    ACTION_UI_DOWNLOAD_PREPARE,
+    ACTION_UI_DOWNLOAD_HIDE,
+    ACTION_UI_DOWNLOAD_READY
 } from "../constants/actions";
 import { HOST } from "../constants/configs";
 
@@ -88,12 +90,40 @@ function transformParticipantsObjects(listOfParticipantsObjects) {
         const hasStar = obj.tags.includes('star');
         const hasNFC = obj.tags.includes('nfc');
 
+        // Major related
+        const majorQuestion = obj.questions.filter(q => q.name==='major')[0];
+        let major = 'Unknown';
+        if (majorQuestion && majorQuestion.value) {
+            major = majorQuestion.value;
+        }
+
+        // Branch related ("default", "mentor", etc.)
+        const branch = obj.branch || 'default';
+
+        // Employment Preference Question
+        const employmentQuestion = obj.questions.filter(q => q.name==='employment')[0];
+        let employmentQuestionAnswer = 'Employment preference unknown';
+        if (employmentQuestion && employmentQuestion.value) {
+            employmentQuestionAnswer = employmentQuestion.value;
+        }
+
+        // Optional Github question
+        const githubQuestion = obj.questions.filter(q => q.name==='github')[0];
+        let githubURL = '';
+        if (githubQuestion && githubQuestion.value) {
+            githubURL = githubQuestion.value;
+        }
+
         return Object.assign({}, obj, {
             resumePath,
             resumeType,
             resumeId,
             hasStar,
-            hasNFC
+            hasNFC,
+            major,
+            branch,
+            employmentQuestionAnswer,
+            githubURL,
         });
     });
 }
@@ -181,7 +211,7 @@ export function selectParticipant(participant) {
                 'Content-Type': 'application/json'
             }),
             body: JSON.stringify({
-                resume: participant.resumeId
+                registration_id: participant.id
             })
         })
         .then(response => {
@@ -331,7 +361,7 @@ export function downloadParticipantResume(participant) {
             'Content-Type': 'application/json'
         }),
         body: JSON.stringify({
-            resume: participant.resumeId
+            registration_id: participant.id
         })
     })
     .then(response => {
@@ -352,7 +382,7 @@ export function downloadParticipantResume(participant) {
 export function bulkDownload({all=false, star=false, nfc=false, participants=null}) {
     return dispatch => {
         dispatch({
-            type: ACTION_UI_GLOBAL_LOADER_SHOW
+            type: ACTION_UI_DOWNLOAD_PREPARE,
         });
 
         let promise = null;
@@ -377,7 +407,7 @@ export function bulkDownload({all=false, star=false, nfc=false, participants=nul
                 }
                 throw new Error('Error: Connection lost. Please check your Internet connection and reload page.');
             }).then(json => {
-                bulkDownloadWithIDs(dispatch, transformParticipantsObjects(json.participants).map(participant => participant.resumeId));
+                bulkDownloadWithIDs(dispatch, json.participants);
             }).catch(error => {
                 console.log(error.message);
                 dispatch({
@@ -387,14 +417,14 @@ export function bulkDownload({all=false, star=false, nfc=false, participants=nul
                     }
                 });
                 dispatch({
-                    type: ACTION_UI_GLOBAL_LOADER_HIDE
+                    type: ACTION_UI_DOWNLOAD_HIDE
                 });
             })
         }
     };
 }
 
-function bulkDownloadWithIDs(dispatch, listOfResumeIDs) {
+function bulkDownloadWithIDs(dispatch, listOfParticipantsObjects) {
     return fetch(`${HOST}/resume/bulk/prepare`, {
         method: 'POST',
         mode: 'cors',
@@ -404,7 +434,7 @@ function bulkDownloadWithIDs(dispatch, listOfResumeIDs) {
             'Content-Type': 'application/json'
         }),
         body: JSON.stringify({
-            resumes: listOfResumeIDs
+            registration_ids: listOfParticipantsObjects.map(obj => obj.id),
         })
     }).then(response => {
         if (response.ok) {
@@ -426,7 +456,7 @@ function bulkDownloadWithIDs(dispatch, listOfResumeIDs) {
             } else if (downloadStatus.zipStatus === 'READY') {
                 // Zip file is ready, show dialog with download link
                 dispatch({
-                    type: ACTION_UI_DOWNLOAD_SHOW,
+                    type: ACTION_UI_DOWNLOAD_READY,
                     payload: {
                         downloadURL: downloadStatus.zipUrl
                     }
@@ -447,7 +477,7 @@ function bulkDownloadWithIDs(dispatch, listOfResumeIDs) {
             }
         });
         dispatch({
-            type: ACTION_UI_GLOBAL_LOADER_HIDE
+            type: ACTION_UI_DOWNLOAD_HIDE
         });
     });
 }
@@ -474,13 +504,10 @@ function fetchBulkDownloadStatus(dispatch, downloadId) {
         if (zipStatus === 'PREPARING') {
             return json;
         } else if (zipStatus === 'READY') {
-            dispatch({
-                type: ACTION_UI_GLOBAL_LOADER_HIDE
-            });
             return json;
         } else if (zipStatus === 'FAILED') {
             dispatch({
-                type: ACTION_UI_GLOBAL_LOADER_HIDE
+                type: ACTION_UI_DOWNLOAD_HIDE
             });
             dispatch({
                 type: ACTION_UI_ERROR_SHOW,
@@ -492,7 +519,7 @@ function fetchBulkDownloadStatus(dispatch, downloadId) {
         } else if (zipStatus === 'EXPIRED') {
             console.error('Bulk download file expired unexpectedly.');
             dispatch({
-                type: ACTION_UI_GLOBAL_LOADER_HIDE
+                type: ACTION_UI_DOWNLOAD_HIDE
             });
             dispatch({
                 type: ACTION_UI_ERROR_SHOW,
@@ -504,7 +531,7 @@ function fetchBulkDownloadStatus(dispatch, downloadId) {
         } else {
             console.error(`Server responds with unexpected zipStatus: ${zipStatus}`);
             dispatch({
-                type: ACTION_UI_GLOBAL_LOADER_HIDE
+                type: ACTION_UI_DOWNLOAD_HIDE
             });
             dispatch({
                 type: ACTION_UI_ERROR_SHOW,
@@ -523,7 +550,7 @@ function fetchBulkDownloadStatus(dispatch, downloadId) {
             }
         });
         dispatch({
-            type: ACTION_UI_GLOBAL_LOADER_HIDE
+            type: ACTION_UI_DOWNLOAD_HIDE
         });
     });
 }

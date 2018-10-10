@@ -20,7 +20,9 @@ DebugHelper.login = () => {
         type: ACTION_USER_LOGIN,
         payload: {
             username: 'Debug Session',
-            token: ''
+            token: '',
+            sponsor_name: 'Test Company',
+            logo_url: 'https://hack.gt/assets/hackgt.svg'
         }
     })
 }
@@ -33,7 +35,11 @@ DebugHelper.populateSampleParticipants = () => {
                 id: `1111${i}`,
                 name: `Siwei Li ${i}`,
                 email: "robertsiweili@gatech.edu",
-                hasStar: i % 2 === 0
+                hasStar: i % 2 === 0,
+                major: "Computer Science",
+                branch: i % 3 === 0 ? 'mentor': 'default',
+                employmentQuestionAnswer: 'Internship / Co-op Summer 2019',
+                githubURL: i % 4 === 0 ? 'https://github.com/RSLi': ''
             }))
         }
     })

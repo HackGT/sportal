@@ -2,6 +2,7 @@ import * as express from "express";
 import * as compression from "compression";
 import {Logger, getLogger} from "log4js";
 import * as AWS from "aws-sdk";
+import * as pgp from "pg-promise";
 import {join} from "path";
 
 import api from "./api";
@@ -35,6 +36,10 @@ AWS.config.update({
     region: app.get("config").awsRegion,
     correctClockSkew: true
 });
+
+// Setup database connection
+const postgresClient = pgp();
+app.set("dbConnection", postgresClient(app.get("config").databaseConnectionString));
 
 // Setup console logging
 const logger: Logger = getLogger();

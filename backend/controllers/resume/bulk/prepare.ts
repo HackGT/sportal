@@ -6,9 +6,10 @@ import {Logger} from "log4js";
 import {ResponseCodes} from "../../../models/util/response/responseCodes";
 import {ZipState, ZipStatus} from "../../../models/util/global/zipStateModel";
 import {LastDownload} from "../../../models/util/global/lastDownloadModel";
+import {getParticipantResumeKey} from "../../../models/participant/participantModel";
 
 interface IPrepareBulkResumeRequest {
-    resumes: string[];
+    registration_ids: string[];
 }
 
 class LambdaZipResumesRequest {
@@ -33,16 +34,23 @@ const router = Router();
 
 router.post("/", async (req, res, next) => {
     const prepareBulkRequest = req.body as IPrepareBulkResumeRequest;
-    if (!prepareBulkRequest || !prepareBulkRequest.resumes || !prepareBulkRequest.resumes.length) {
+    if (!prepareBulkRequest || !prepareBulkRequest.registration_ids || !prepareBulkRequest.registration_ids.length) {
         req.routed = true;
         res.status(ResponseCodes.ERROR_BAD_REQUEST);
-        next(new Error("Request missing resume list parameter or resume list is empty"));
+        next(new Error("Request missing registration ID list parameter or liset is empty"));
         return;
     }
     const now = Date.now();
     try {
+        let resumes: string[] = [];
+        let i: number;
+        for (i = 0; i < prepareBulkRequest.registration_ids.length; i++) {
+            const resume = await getParticipantResumeKey(req.app.get("dbConnection"), prepareBulkRequest.registration_ids[i]);
+            if (resume) {
+                resumes.push(resume);
+            }
+        }
         // Hash the resume list for caching purposes
-        const resumes = prepareBulkRequest.resumes;
         resumes.sort();
         const zipId = uuid(resumes.join(), req.app.get("config").zipUUIDNamespace);
         const tempZipFileName = "resumes-bulk-" + zipId + ".zip";
@@ -81,7 +89,7 @@ router.post("/", async (req, res, next) => {
             const lambda = new Lambda();
             const params = {
                 FunctionName: "zipResumes",
-                Payload: JSON.stringify(new LambdaZipResumesRequest(prepareBulkRequest.resumes, tempZipFileName))
+                Payload: JSON.stringify(new LambdaZipResumesRequest(resumes, tempZipFileName))
             };
             const url =  JSON.parse((await lambda.invoke(params).promise()).Payload as string).url;
             zipState.resumeUrl = url;

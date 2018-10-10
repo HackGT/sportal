@@ -19,23 +19,29 @@ class NFCService {
         this.isConnected = false;
         this.store = store;
         this.url = url;
-        this.socket = new WebSocket(url);
-        this.socket.onopen = () => {
-            console.log("NFCService Websocket connection established.");
-            this.isConnected = true;
-        };
-        this.socket.onmessage = (event) => {
-            console.log(event.data);
-            this.onReceiveID(JSON.parse(event.data)["badgeID"]);
-        };
-        this.socket.onerror = (event) => {
-            console.error("Websocket error observed: ", event);
-            console.log("Websocket connection to the NFC service has failed, disabling the optional NFC service.");
-            this.isConnected = false;
-        };
-        this.socket.onclose = () => {
-            console.log("NFCService Websocket closed.");
-        };
+        try {
+            this.socket = new WebSocket(url);
+            this.socket.onopen = () => {
+                console.log("NFCService Websocket connection established.");
+                this.isConnected = true;
+            };
+            this.socket.onmessage = (event) => {
+                console.log(event.data);
+                this.onReceiveID(JSON.parse(event.data)["badgeID"]);
+            };
+            this.socket.onerror = (event) => {
+                console.error("Websocket error observed: ", event);
+                console.log("Websocket connection to the NFC service has failed, disabling the optional NFC service.");
+                this.isConnected = false;
+            };
+            this.socket.onclose = () => {
+                console.log("NFCService Websocket closed.");
+            };
+        }
+        catch(error) {
+            console.error(error);
+        }
+        
     }
 
     onReceiveID(id) {
@@ -60,6 +66,34 @@ class NFCService {
                 console.log(`Tagged ${id} with visisted by NFC`);
             } else {
                 console.error(`Failed to tag ${id} as visited by NFC`);
+            }
+        })
+        .catch(error => {
+            console.error(error.message);
+        });
+
+        // Mark the participant as confirmed/opted-in if not already
+        // (some of the participants did not explicitly agree to expose
+        // their data in Sponsorship Portal before the event, so scanning
+        // their NFC badge will be considered an explicit authorization)
+        fetch(`${HOST}/participant/confirm`, {
+            method: 'POST',
+            mode: 'cors',
+            credentials: 'include',
+            headers: new Headers({
+                'Authorization': `Bearer ${window.authService.getUserState().token}`,
+                'Content-Type': 'application/json'
+            }),
+            body: JSON.stringify({
+                registration_id: id,
+                opt_in: true,
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Successfully confirmed');
+            } else {
+                console.error(`Failed to confirm ${id}`);
             }
         })
         .catch(error => {

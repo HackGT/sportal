@@ -14,7 +14,7 @@ export class RenewResponse {
 export const router = Router();
 
 router.get("/", (req, res, next) => {
-    const renewResponse = new RenewResponse(createToken(req.id as string,
+    const renewResponse = new RenewResponse(createToken(req.id as string, req.sponsor as string,
         req.app.get("config").authSecret, req.app.get("config").authExp));
     res.status(ResponseCodes.SUCCESS);
     req.returnObject = renewResponse;
