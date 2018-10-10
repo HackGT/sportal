@@ -46,6 +46,11 @@ router.post("/", async (req, res, next) => {
         next(err);
         return;
     }
+    if (!profile) {
+        res.status(ResponseCodes.ERROR_UNAUTHORIZED);
+        req.routed = true;
+        next(new Error("Invalid Credentials"));
+    }
     try {
         const validCredentials = await compare(loginRequest.password, profile.password);
         if (validCredentials) {
