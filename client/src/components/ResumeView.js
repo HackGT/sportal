@@ -38,7 +38,7 @@ class ResumeView extends Component {
             view = emptyView;
         } else if (selectedParticipantResumeType === 'pdf') {
             view = pdfView;
-        } else if (selectedParticipantResumeType === 'docx') {
+        } else if (selectedParticipantResumeType === 'docx' || selectedParticipantResumeType === 'doc') {
             view = docView;
         } else {
             view = otherView;
