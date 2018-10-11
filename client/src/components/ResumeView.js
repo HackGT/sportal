@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Document, Page } from 'react-pdf';
+// import { Document, Page } from 'react-pdf';
 import { Icon } from 'semantic-ui-react';
 
 
@@ -24,11 +24,12 @@ class ResumeView extends Component {
         );
 
         const pdfView = (
-            <Document
-              file={selectedParticipantResumeURL}
-            >
-              <Page pageNumber={1} scale={1.8} />
-            </Document>
+            // <Document
+            //   file={selectedParticipantResumeURL}
+            // >
+            //   <Page pageNumber={1} scale={1.8} />
+            // </Document>
+            <iframe style={{width: '100%', height: '100%'}} title="pdf-viewer" src={selectedParticipantResumeURL} />
         );
 
         const docView = (
