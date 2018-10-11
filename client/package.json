@@ -1,13 +1,15 @@
 {
   "name": "sponsorship-portal-client",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "homepage": ".",
+  "license": "UNLICENSED",
   "dependencies": {
     "cross-fetch": "^2.2.2",
     "downloadjs": "^1.4.7",
     "jwt-decode": "^2.2.0",
     "react": "^16.5.0",
     "react-dom": "^16.5.0",
+    "react-media": "^1.8.0",
     "react-pdf": "^3.0.5",
     "react-redux": "^5.0.7",
     "react-scripts": "1.1.5",

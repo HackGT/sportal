@@ -44,10 +44,10 @@ class AuthService {
     }
 
     startAutoRenew() {
-        setInterval(() => {
+        this.intervalId = setInterval(() => {
             console.log('renew token now');
             this.renewToken();
-        }, 300000)
+        }, 300000);
     }
 
     login(username, password) {
@@ -123,6 +123,8 @@ class AuthService {
         window.localStorage.removeItem('username');
         window.localStorage.removeItem('sponsor_name');
         window.localStorage.removeItem('logo_url');
+
+        clearInterval(this.intervalId);
     }
 }
 
