@@ -46,11 +46,20 @@ export async function getAllParticipants(db: pgp.IDatabase<{}>, sponsor_name: st
 export async function searchToken(db: pgp.IDatabase<{}>, user_id: string, queryStr: string): Promise<Participant[]> {
     // process token to comply with to_tsquery
     const tokens = queryStr.split(/(\s+)/).filter( function(e) { return e.trim().length > 0; } );
-    const tsquery = tokens.join(' | ');
+    const tsqueryOR = tokens.join(' | ');
+    const tsqueryAND = tokens.join(' & ');
+    const tsqueryPROX = tokens.join(' <-> ');
 
     // perform full-text search
-    const ftsQuery = "SELECT tags -> $1 as tags, blob FROM participant WHERE document @@ to_tsquery($2) AND opted_in = true;";
-    const result = await db.query(ftsQuery, [user_id, tsquery]);
+    const ftsQuery = `
+    SELECT tags -> $1 as tags, blob 
+    FROM participant 
+    WHERE document @@ to_tsquery($2) AND opted_in = true
+    ORDER BY CASE WHEN document @@ to_tsquery($3) THEN 0 END,
+            CASE WHEN document @@ to_tsquery($4) THEN 1 ELSE 999 END;
+    `
+    
+    const result = await db.query(ftsQuery, [user_id, tsqueryOR, tsqueryPROX, tsqueryAND]);
     const participants: Participant[] = [];
     for (let i: number = 0; i < result.length; i++) {
         if (result[i].tags) {
