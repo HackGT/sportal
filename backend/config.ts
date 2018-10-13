@@ -28,13 +28,20 @@ class Config {
     // Bulk Download
     public bulkDownloadLimit: number = parseInt(process.env.BULK_DOWNLOAD_LIMIT as string, 10) || 1000; // Once per second
 
+    // GraphQL
+    public graphqlCheckinEndpoint: string = process.env.GRAPHQL_CHECKIN_ENDPOINT as string;
+    public graphqlCheckinApiKey: string = process.env.GRAPHQL_CHECKIN_API_KEY as string;
+    public graphqlCheckinSponsorTagTemplate: string = "sponsor_%s";
+
     // Required Configurations
     public required: string[] = [
         this.databaseConnectionString,
         this.awsAccessKeyId,
         this.awsSecretAccessKey,
         this.awsResumeBucket,
-        this.awsRegion
+        this.awsRegion,
+        this.graphqlCheckinApiKey,
+        this.graphqlCheckinEndpoint
     ];
     public requiredProd: string[] = [
         this.serverAdminApiKey,
