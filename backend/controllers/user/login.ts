@@ -37,9 +37,10 @@ router.post("/", async (req, res, next) => {
         req.routed = true;
         next(new Error("Request missing login parameters"));
     }
+    const email = loginRequest.email.toLowerCase();
     let profile: IUser;
     try {
-        profile = await getUserProfile(req.app.get("dbConnection"), loginRequest.email);
+        profile = await getUserProfile(req.app.get("dbConnection"), email);
     }
     catch (err) {
         res.status(ResponseCodes.ERROR_UNAUTHORIZED);
@@ -56,7 +57,7 @@ router.post("/", async (req, res, next) => {
         const validCredentials = await compare(loginRequest.password, profile.password);
         if (validCredentials) {
             const sponsor = await getSponsorProfileByName(req.app.get("dbConnection"), profile.sponsor_name);
-            const loginResponse = new LoginResponse(createToken(loginRequest.email as string, profile.sponsor_name,
+            const loginResponse = new LoginResponse(createToken(email, profile.sponsor_name,
                 req.app.get("config").authSecret, req.app.get("config").authExp), sponsor.name, sponsor.logo_url);
             res.status(ResponseCodes.SUCCESS);
             req.returnObject = loginResponse;

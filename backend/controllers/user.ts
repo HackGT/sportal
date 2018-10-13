@@ -1,7 +1,8 @@
 import {Router} from "express";
 
-import {addUser} from "../models/user/userModel";
+import {IUser, getUserProfile, addUser} from "../models/user/userModel";
 import {ResponseCodes} from "../models/util/response/responseCodes";
+import {isEmail} from "../util/validation/validation";
 
 import renew from "./user/renew";
 import login from "./user/login";
@@ -25,10 +26,26 @@ router.put('/', async (req, res, next) => {
         res.status(ResponseCodes.ERROR_BAD_REQUEST);
         req.routed = true;
         next(new Error("Request missing user add parameters"));
+        return;
+    }
+    if (!isEmail(addUserRequest.email)) {
+        res.status(ResponseCodes.ERROR_BAD_REQUEST);
+        req.routed = true;
+        next(new Error("Email is not a valid format"));
+        return;
     }
     if (addUserRequest.apiKey === req.app.get("config").serverAdminApiKey) {
         try {
-            await addUser(req.app.get("dbConnection"), addUserRequest.email, addUserRequest.password, addUserRequest.sponsorName);
+            const email = addUserRequest.email.toLowerCase();
+            let profile: IUser;
+            profile = await getUserProfile(req.app.get("dbConnection"), email);
+            if (profile) {
+                res.status(ResponseCodes.ERROR_UNPROCESSABLE_ENTITY);
+                req.routed = true;
+                next(new Error("Email already exists!"));
+                return;
+            }
+            await addUser(req.app.get("dbConnection"), email, addUserRequest.password, addUserRequest.sponsorName);
             res.status(ResponseCodes.SUCCESS);
             req.routed = true;
             next();
