@@ -1,5 +1,5 @@
 import { loadParticipants } from "../actions/participants";
-import { ACTION_UI_CHANGE_VIEW_MODE, ACTION_UI_SELECT_PARTICIPANT_ID } from "../constants/actions";
+import { ACTION_UI_CHANGE_VIEW_MODE } from "../constants/actions";
 import { HOST } from "../constants/configs";
 
 /**
@@ -101,18 +101,35 @@ class NFCService {
         });
 
         this.store.dispatch({
-            type: ACTION_UI_SELECT_PARTICIPANT_ID,
-            payload: {
-                id: '',
-                resumeType: '',
-                resumeUrl: ''
-            }
-        });
-        this.store.dispatch({
             type: ACTION_UI_CHANGE_VIEW_MODE,
             payload: {
                 viewMode: 'visit'
             }
+        });
+
+        // Send request to HackGT/checkin, for keeping track of participant score
+        // by marking them as attended for this event.
+        fetch(`${HOST}/participant/checkin`, {
+            method: 'POST',
+            mode: 'cors',
+            credentials: 'include',
+            headers: new Headers({
+                'Authorization': `Bearer ${window.authService.getUserState().token}`,
+                'Content-Type': 'application/json'
+            }),
+            body: JSON.stringify({
+                registration_id: id,
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Successful check in');
+            } else {
+                console.error(`Failed to check in ${id}`);
+            }
+        })
+        .catch(error => {
+            console.error(error.message);
         });
     }
 }
