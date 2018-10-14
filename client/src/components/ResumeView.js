@@ -25,7 +25,7 @@ class ResumeView extends Component {
 
         // For pdf iframes, some browsers require Content-Disposition to be inline
         // To use request parameters with S3, see https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectGET.html
-        const requestParams = '?response-content-disposition=inline';
+        const requestParams = '&response-content-disposition=inline';
         const urlWithRequestParams = `${selectedParticipantResumeURL}${requestParams}`;
 
         const pdfView = (
