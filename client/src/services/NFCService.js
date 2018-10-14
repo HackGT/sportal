@@ -45,32 +45,6 @@ class NFCService {
     }
 
     onReceiveID(id) {
-        // Load the participant
-        this.store.dispatch(loadParticipants({ids: [id]}));
-        // Mark the participant as visited by adding the 'nfc' tag
-        fetch(`${HOST}/participant/tag`, {
-            method: 'POST',
-            mode: 'cors',
-            credentials: 'include',
-            headers: new Headers({
-                'Authorization': `Bearer ${window.authService.getUserState().token}`,
-                'Content-Type': 'application/json'
-            }),
-            body: JSON.stringify({
-                registration_id: id,
-                tag: 'nfc'
-            })
-        })
-        .then(response => {
-            if (response.ok) {
-                console.log(`Tagged ${id} with visisted by NFC`);
-            } else {
-                console.error(`Failed to tag ${id} as visited by NFC`);
-            }
-        })
-        .catch(error => {
-            console.error(error.message);
-        });
 
         // Mark the participant as confirmed/opted-in if not already
         // (some of the participants did not explicitly agree to expose
@@ -92,6 +66,32 @@ class NFCService {
         .then(response => {
             if (response.ok) {
                 console.log('Successfully confirmed');
+                // Load the participant
+                this.store.dispatch(loadParticipants({ids: [id]}));
+                // Mark the participant as visited by adding the 'nfc' tag
+                fetch(`${HOST}/participant/tag`, {
+                    method: 'POST',
+                    mode: 'cors',
+                    credentials: 'include',
+                    headers: new Headers({
+                        'Authorization': `Bearer ${window.authService.getUserState().token}`,
+                        'Content-Type': 'application/json'
+                    }),
+                    body: JSON.stringify({
+                        registration_id: id,
+                        tag: 'nfc'
+                    })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log(`Tagged ${id} with visisted by NFC`);
+                    } else {
+                        console.error(`Failed to tag ${id} as visited by NFC`);
+                    }
+                })
+                .catch(error => {
+                    console.error(error.message);
+                });
             } else {
                 console.error(`Failed to confirm ${id}`);
             }

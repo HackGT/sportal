@@ -79,4 +79,11 @@ DebugHelper.downloadSampleResume = (url) => {
     downloadHelper(url);
 }
 
+DebugHelper.onScanNFC = (id) => {
+    if (!id) {
+        id = DebugHelper.store.getState().participants.list[0].id;
+    }
+    window.nfcService.onReceiveID(id);
+}
+
 export default DebugHelper;
