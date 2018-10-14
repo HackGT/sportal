@@ -73,7 +73,7 @@ class BulkDownloadModal extends Component {
         if (downloadState === 'PREPARING') {
             modalContent = (
                 <Modal.Content>
-                    Your file is being prepared. Please wait.
+                    A zip of resumes is being prepared. Please wait.
                 </Modal.Content>
             );
             downloadButton = (
@@ -87,7 +87,7 @@ class BulkDownloadModal extends Component {
         } else if (downloadState === 'READY') {
             modalContent = (
                 <Modal.Content>
-                    Your file has been prepared. Click the button below to begin download.
+                    The zip of resumes has been prepared. Click the button below to begin download.
                 </Modal.Content>
             );
             downloadButton = (
@@ -96,7 +96,7 @@ class BulkDownloadModal extends Component {
                         primary
                         onClick={() => hideDownload()}
                     >
-                        Download
+                        Download Resumes
                     </Button>
                 </a>
             );

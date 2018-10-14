@@ -395,7 +395,7 @@ export function bulkDownload({all=false, star=false, nfc=false, participants=nul
             promise = loadParticipantsWithNFC();
         } else if (participants) {
             // download for selected participants
-            bulkDownloadWithIDs(dispatch, participants.map(participant => participant.resumeId));
+            bulkDownloadWithIDs(dispatch, participants);
         } else {
             console.error('Invalid argument for bulkdownload.')
         }
@@ -424,7 +424,18 @@ export function bulkDownload({all=false, star=false, nfc=false, participants=nul
     };
 }
 
+function downloadMetadataCSV(listOfParticipantsObjects) {
+    const header = 'resume, name, email, major, preference, github';
+    const content = listOfParticipantsObjects.map(participant => {
+        return `${participant.resumeId}, ${participant.name}, ${participant.email}, ${participant.major}, ${participant.employmentQuestionAnswer}, ${participant.githubURL}`;
+    }).join('\n');
+    const csv = `${header}\n${content}`;
+    download(csv, 'reference.csv', 'text/plain');
+}
+
 function bulkDownloadWithIDs(dispatch, listOfParticipantsObjects) {
+    downloadMetadataCSV(listOfParticipantsObjects);
+
     return fetch(`${HOST}/resume/bulk/prepare`, {
         method: 'POST',
         mode: 'cors',
