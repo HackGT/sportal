@@ -407,7 +407,7 @@ export function bulkDownload({all=false, star=false, nfc=false, participants=nul
                 }
                 throw new Error('Error: Connection lost. Please check your Internet connection and reload page.');
             }).then(json => {
-                bulkDownloadWithIDs(dispatch, json.participants);
+                bulkDownloadWithIDs(dispatch, transformParticipantsObjects(json.participants));
             }).catch(error => {
                 console.log(error.message);
                 dispatch({
