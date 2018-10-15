@@ -7,7 +7,7 @@ class ParticipantTableRow extends React.Component {
         const participant = this.props.participant;
         const onSelect = this.props.onSelect;
         const onStar = this.props.onStar;
-        const onDownload = this.props.onDownload;
+        // const onDownload = this.props.onDownload;
 
         return (
             <Table.Row>
@@ -52,7 +52,7 @@ class ParticipantTableRow extends React.Component {
                         {
                             participant.hasStar ? <Button icon basic onClick={onStar}><Icon name="star" color="yellow" /></Button> : <Button icon basic onClick={onStar}><Icon name="star outline" /></Button>
                         }
-                        <Button basic icon="download" onClick={onDownload}/>
+                        {/* <Button basic icon="download" onClick={onDownload}/> */}
                     </Button.Group>
                 </Table.Cell>
             </Table.Row>
