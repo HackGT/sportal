@@ -31,8 +31,8 @@ class ResumeView extends Component {
             // </Document>
             // <object data={selectedParticipantResumeURL} type="application/pdf" width="100%" height="100%">
             // </object>
-            // <iframe style={{width: '100%', height: '100%'}} title="pdf-viewer" src={selectedParticipantResumeURL} />
-            <embed src={selectedParticipantResumeURL} type="application/pdf" width="100%" height="100%" />
+            <iframe style={{width: '100%', height: '100%'}} title="pdf-viewer" src={selectedParticipantResumeURL} />
+            // <embed src={selectedParticipantResumeURL} type="application/pdf" width="100%" height="100%" />
         );
 
         const docView = (
