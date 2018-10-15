@@ -5,7 +5,6 @@ import { Icon } from 'semantic-ui-react';
 
 class ResumeView extends Component {
     render() {
-        // const resumeURL = this.props.resumeURL;
         const selectedParticipantID = this.props.selectedParticipantID;
         const selectedParticipantResumeType = this.props.selectedParticipantResumeType;
         const selectedParticipantResumeURL = this.props.selectedParticipantResumeURL;
@@ -23,21 +22,16 @@ class ResumeView extends Component {
             </div>
         );
 
-        // For pdf iframes, some browsers require Content-Disposition to be inline
-        // To use request parameters with S3, see https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectGET.html
-        // const requestParams = '&response-content-disposition=inline';
-        // const urlWithRequestParams = `${selectedParticipantResumeURL}${requestParams}`;
-        const urlWithRequestParams = selectedParticipantResumeURL;
-
         const pdfView = (
+            // For pdf.js
             // <Document
             //   file={selectedParticipantResumeURL}
             // >
             //   <Page pageNumber={1} scale={1.8} />
             // </Document>
-            <object data={urlWithRequestParams} type="application/pdf" width="100%" height="100%">
-                <iframe style={{width: '100%', height: '100%'}} title="pdf-viewer" src={urlWithRequestParams} />
-            </object>
+            // <object data={selectedParticipantResumeURL} type="application/pdf" width="100%" height="100%">
+            // </object>
+            <iframe style={{width: '100%', height: '100%'}} title="pdf-viewer" src={selectedParticipantResumeURL} />
         );
 
         const docView = (
