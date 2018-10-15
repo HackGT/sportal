@@ -18,7 +18,7 @@ class LoginPage extends Component {
                     <Form>
                         <Form.Field>
                             <label>Email</label>
-                            <input placeholder="email@example.com" onChange={(e) => this.setState({username: e.target.value})} />
+                            <input type="email" placeholder="email@example.com" onChange={(e) => this.setState({username: e.target.value})} />
                         </Form.Field>
                         <Form.Field>
                             <label>Password</label>

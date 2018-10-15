@@ -69,12 +69,25 @@ export function loadParticipants({ids = null, search = null, star = false, nfc =
 }
 
 function loadParticipantsObjects(listOfParticipantsObjects) {
-    return {
-        type: ACTION_PARTICIPANTS_LOAD,
-        payload: {
-            list: transformParticipantsObjects(listOfParticipantsObjects)
+    const transformedList = transformParticipantsObjects(listOfParticipantsObjects);
+
+    
+    return dispatch => {
+        // Load transformed participants list into store
+        dispatch({
+            type: ACTION_PARTICIPANTS_LOAD,
+            payload: {
+                list: transformedList
+            }
+        });
+
+        // If only one person, directly select this person's resume
+        // Creates a beautiful experience for NFC
+        if (transformedList.length === 1) {
+            selectParticipant(transformedList[0]);
         }
-    };
+        
+    }
 }
 
 function transformParticipantsObjects(listOfParticipantsObjects) {
