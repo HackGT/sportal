@@ -3,7 +3,7 @@ import {Router} from "express";
 import {ResponseCodes} from "../../models/util/response/responseCodes";
 import { Participant, searchToken } from "../../models/participant/participantModel";
 
-import byid from "./search/byid";
+import byids from "./search/byids";
 import bytag from "./search/bytag";
 
 interface SearchRequest {
@@ -20,7 +20,7 @@ export class SearchResponse {
 
 export const router = Router();
 
-router.use("/byid", byid);
+router.use("/byids", byids);
 router.use("/bytag", bytag);
 
 router.post("/", async (req, res, next) => {

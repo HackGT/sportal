@@ -1,7 +1,7 @@
 import {Router} from "express";
 
 import {ResponseCodes} from "../../../models/util/response/responseCodes";
-import { Participant, searchByIds } from "../../../models/participant/participantModel";
+import {Participant, searchByIds} from "../../../models/participant/participantModel";
 
 interface ISearchByIdRequest {
     ids: string[];
