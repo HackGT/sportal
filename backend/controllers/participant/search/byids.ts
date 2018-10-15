@@ -4,7 +4,7 @@ import {ResponseCodes} from "../../../models/util/response/responseCodes";
 import {Participant, searchByIds} from "../../../models/participant/participantModel";
 
 interface ISearchByIdRequest {
-    ids: string[];
+    registration_ids: string[];
 }
 
 export class SearchByIdResponse {
@@ -19,7 +19,7 @@ export const router = Router();
 
 router.post("/", async (req, res, next) => {
     const searchBody = req.body as ISearchByIdRequest;
-    if (!searchBody || !searchBody.ids) {
+    if (!searchBody || !searchBody.registration_ids) {
         req.routed = true;
         res.status(ResponseCodes.ERROR_BAD_REQUEST);
         next(new Error("Request missing search parameters"));
