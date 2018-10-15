@@ -30,15 +30,21 @@ router.post('/', async (req, res, next) => {
     }
     try {
         const resume = await getParticipantResumeKey(req.app.get("dbConnection"), resumeRequest.registration_id);
-        console.log(resume);
         if (!resume) {
             res.status(ResponseCodes.ERROR_UNAUTHORIZED);
             req.routed = true;
             next(new Error("Cannot download resume."));
             return;
         }
+        let contentType;
+        const splitArr = resume.split(".");
+        if (splitArr[splitArr.length - 1] === "pdf") {
+            contentType = "application/pdf";
+        } else {
+            contentType = "application/octet-stream";
+        }
         const s3 = new S3();
-        const awsParams = {Bucket: req.app.get("config").awsResumeBucket as string, Key: resume, Expires: req.app.get("config").awsSignedUrlExpires};
+        const awsParams = {Bucket: req.app.get("config").awsResumeBucket as string, Key: resume, Expires: req.app.get("config").awsSignedUrlExpires, ResponseContentDisposition: "inline", ResponseContentType: contentType};
         const signedUrl = s3.getSignedUrl("getObject", awsParams);
         const resumeResponse = new GetResumeResponse(signedUrl);
         res.status(ResponseCodes.SUCCESS);
