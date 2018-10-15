@@ -84,7 +84,7 @@ function loadParticipantsObjects(listOfParticipantsObjects) {
         // If only one person, directly select this person's resume
         // Creates a beautiful experience for NFC
         if (transformedList.length === 1) {
-            selectParticipant(transformedList[0]);
+            selectParticipant(selectParticipant(transformedList[0]));
         }
         
     }
