@@ -8,14 +8,13 @@ interface IOptInRequest {
     registration_id: string;
     opt_in: boolean;
     apiKey: string;
-    jwt: string;
 }
 
 const router = Router();
 
 router.post('/', async (req, res, next) => {
     const confirmBody = req.body as IOptInRequest;
-    if (!confirmBody || !confirmBody.registration_id || (!confirmBody.apiKey && !confirmBody.jwt)) {
+    if (!confirmBody || !confirmBody.registration_id) {
         req.routed = true;
         res.status(ResponseCodes.ERROR_BAD_REQUEST);
         next(new Error("Request missing search parameters"));
