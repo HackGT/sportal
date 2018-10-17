@@ -23,16 +23,7 @@ class ResumeView extends Component {
         );
 
         const pdfView = (
-            // For pdf.js
-            // <Document
-            //   file={selectedParticipantResumeURL}
-            // >
-            //   <Page pageNumber={1} scale={1.8} />
-            // </Document>
-            // <object data={selectedParticipantResumeURL} type="application/pdf" width="100%" height="100%">
-            // </object>
-            <iframe style={{width: '100%', height: '100%'}} title="pdf-viewer" src={selectedParticipantResumeURL} />
-            // <embed src={selectedParticipantResumeURL} type="application/pdf" width="100%" height="100%" />
+            <iframe style={{width: '100%', height: '100%'}} title="pdf-viewer" src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(selectedParticipantResumeURL)}`} />
         );
 
         const docView = (
@@ -60,7 +51,7 @@ class ResumeView extends Component {
         }
 
         return (
-            <div style={{width: "100%", height: "85vh", overflow: "scroll", backgroundColor: "lightgrey"}}>
+            <div style={{width: "100%", height: "85vh", overflow: "auto", backgroundColor: "lightgrey"}}>
                 {view}
             </div>
         );
