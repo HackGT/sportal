@@ -51,7 +51,7 @@ class ResumeView extends Component {
         }
 
         return (
-            <div style={{width: "100%", height: "85vh", overflow: "scroll", backgroundColor: "lightgrey"}}>
+            <div style={{width: "100%", height: "85vh", overflow: "auto", backgroundColor: "lightgrey"}}>
                 {view}
             </div>
         );
